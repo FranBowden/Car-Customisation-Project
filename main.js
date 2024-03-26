@@ -23,7 +23,7 @@ loader.load( 'ferrari.glb', function ( gltf ) {
 
 }, undefined, function ( error ) {
 
-	//console.error( error );
+	console.error( error );
 
 } );
 

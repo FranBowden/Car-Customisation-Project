@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js' //lets just move around in scene view
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'; //load 3d Models
 
-
 /*Controls */
 const controls = new OrbitControls( camera, renderer.domElement );
 
@@ -24,6 +23,7 @@ loader.load( 'ferrari.glb', function ( gltf ) {
 
 }, undefined, function ( error ) {
 
-	console.error( error );
+	//console.error( error );
 
 } );
+

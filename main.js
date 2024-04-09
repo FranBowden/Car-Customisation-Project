@@ -6,40 +6,57 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 100 );
 
-const cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.5 );
-camera.position.set(0,0,20);
+const cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 100 ); //light that follows the camera
+
+camera.position.set(10,2,20);
 camera.lookAt(0,0,1);
-//camera.add(cameralight);
+camera.add(cameralight);
 scene.add(camera);
-
-
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setClearColor(0xcccccc, 1); // Set clear color to light gray with full opacity
+renderer.setClearColor(0xcccccc, 1); //set color to grey
 
 document.body.appendChild( renderer.domElement );
 
 const controls = new OrbitControls( camera, renderer.domElement );
 
+var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),10); //lightens up tires and headlights etc
+scene.add(ambientlight);
+
+  
+
+//model mesh:
 const loader = new GLTFLoader();
 loader.load('model/scene.gltf',
  function (gltf) {
 
   var model = gltf.scene;
-  console.log("Model loaded!");
+  console.log("Model loaded!"); //check if model is loaded
 	model.traverse((o) => {
     if (o.isMesh) {
       const material = o.material;
-      console.log("Material:", material); // Inspect the material properties
+      console.log("Material:", material); // the material properties
   
-      // Check if textures are loaded (e.g., material.map for diffuse texture)
+
       if (material.map) {
-        console.log("Texture loaded:", material.map.image.src); // Check texture source
+        console.log("Texture loaded:", material.map.image.src); //check texture source
       }
     }
 });
 gltf.scene.visible = true;
+
+var spotlight = new THREE.SpotLight(new THREE.Color(1,1,1), 10000);
+  spotlight.position.y=20;
+  spotlight.angle = Math.PI / 6;
+  spotlight.penumbra = 0.3;
+  spotlight.castShadow = true;
+  
+  spotlight.target=model;
+  scene.add(spotlight);
+  var spotLightHelper = new THREE.SpotLightHelper( spotlight );
+  scene.add( spotLightHelper );
+
 
 gltf.scene.scale.multiplyScalar(1 * 3);
     scene.add(gltf.scene);
@@ -48,6 +65,8 @@ gltf.scene.scale.multiplyScalar(1 * 3);
 });
 
 
+
+//update loop func
 var UpdateLoop = function ( )
 {
   renderer.render(scene,camera);

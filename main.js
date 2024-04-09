@@ -6,26 +6,42 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 100 );
 
-var cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.5 );
+const cameralight = new THREE.PointLight( new THREE.Color(1,1,1), 0.5 );
 camera.position.set(0,0,20);
 camera.lookAt(0,0,1);
-camera.add(cameralight);
+//camera.add(cameralight);
 scene.add(camera);
+
+
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor(0xcccccc, 1); // Set clear color to light gray with full opacity
+
 document.body.appendChild( renderer.domElement );
+
+const controls = new OrbitControls( camera, renderer.domElement );
 
 const loader = new GLTFLoader();
 loader.load('model/scene.gltf',
  function (gltf) {
 
-    gltf.scene.traverse((child) => {
-		child.material = new THREE.MeshStandardMaterial({ color: 0xff00ff });
-	  }); 
-	  gltf.scene.scale.multiplyScalar(1 / 1000); 
-	
-	  
+  var model = gltf.scene;
+  console.log("Model loaded!");
+	model.traverse((o) => {
+    if (o.isMesh) {
+      const material = o.material;
+      console.log("Material:", material); // Inspect the material properties
+  
+      // Check if textures are loaded (e.g., material.map for diffuse texture)
+      if (material.map) {
+        console.log("Texture loaded:", material.map.image.src); // Check texture source
+      }
+    }
+});
+gltf.scene.visible = true;
+
+gltf.scene.scale.multiplyScalar(1 * 3);
     scene.add(gltf.scene);
 }, undefined, function (error) {
     console.error(error);

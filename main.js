@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+
 
 //creating a scene 
 const scene = new THREE.Scene();
@@ -24,7 +26,6 @@ const controls = new OrbitControls( camera, renderer.domElement );
 var ambientlight = new THREE.AmbientLight(new THREE.Color(1,1,1),10); //lightens up tires and headlights etc
 scene.add(ambientlight);
 
-  
 
 //model mesh:
 const loader = new GLTFLoader();
@@ -37,13 +38,13 @@ loader.load('model/scene.gltf',
     if (o.isMesh) {
       const material = o.material;
       console.log("Material:", material); // the material properties
-  
 
       if (material.map) {
         console.log("Texture loaded:", material.map.image.src); //check texture source
       }
     }
 });
+
 gltf.scene.visible = true;
 
 var spotlight = new THREE.SpotLight(new THREE.Color(1,1,1), 10000);
@@ -64,6 +65,27 @@ gltf.scene.scale.multiplyScalar(1 * 3);
     console.error(error);
 });
 
+//garage:
+const OBJLoaderr = new OBJLoader();
+
+OBJLoaderr.load('model/garage.obj',
+ function (gltf) {
+
+  var x = gltf;
+  console.log("Model loaded!"); //check if model is loaded
+	x.traverse((o) => {
+    if (o.isMesh) {
+      const material = o.material;
+      console.log("Material:", material); // the material properties
+  
+
+      if (material.map) {
+        console.log("Texture loaded:", material.map.image.src); //check texture source
+      }
+    }
+})
+scene.add(gltf);
+ });
 
 
 //update loop func

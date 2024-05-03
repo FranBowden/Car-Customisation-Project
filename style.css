@@ -1,13 +1,66 @@
-#container {
-    position: relative;
+  #header {
+    position: absolute;
+    text-align: left;
   }
 
-  #overlay {
-    position: absolute;
-    top: 20px; /* Adjust as needed */
-    left: 20px; /* Adjust as needed */
-    width: 200px; /* Set the width */
-    height: 200px; /* Set the height equal to the width to create a square */
-    background-color: rgba(52, 152, 219, 0.7); /* Background color with alpha transparency */
-    z-index: 0; /* Ensure the overlay is on top */
+  #menuDiv {
+    display:block;
+    z-index: 100;
+    width: 100%;
+    padding-left: 5%;
+    font-size: 100px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+ #showBtn {
+  position: absolute; 
+ }
+
+  button {
+    position: absolute; 
+
+    border: none;
+    height: 40px;
+    width: 200px;
+    border-radius: 15px;
+    color: white;
+    background-color: rgb(35, 35, 35);
+  
+  }
+
+  button:hover {
+    background-color: rgb(0, 0, 0);
+  }
+
+  .container {
+    position: absolute;  /* Fix position to bottom of viewport */
+    bottom: 0;         /* Align bottom edge to viewport bottom */
+    left: 0;           /* Align left edge to viewport left */
+    display: flex;     /* Arrange squares horizontally */
+    width: 100%;       /* Span the entire viewport width */
+    height: 5%;        /* Adjust height as desired for the row */
+  }
+  
+  .square {
+    opacity: 0;  
+    transition: opacity 0.5s ease-in-out; 
+    width: 100px;
+    height: 150px;
+    margin-left: 3px;
+    border-radius: 10px;
+  }
+  
+  .square.visible {
+    opacity: 1;  
+  }
+  
+  .red {
+    background-color: rgb(243, 54, 25);
+  }
+  
+  .green {
+    background-color: rgb(78, 180, 44);
+  }
+  
+  .blue {
+    background-color: rgb(31, 93, 237);
   }

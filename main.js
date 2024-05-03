@@ -23,7 +23,7 @@ var objectPosition = new THREE.Vector3();
 
 const cameralight = new THREE.PointLight(new THREE.Color(1, 1, 1), 100); //light that follows the camera
 
-camera.position.set(10, 2, 20);
+camera.position.set(0, 5, 15);
 camera.lookAt(0, 0, 1);
 camera.add(cameralight);
 scene.add(camera);
@@ -36,16 +36,18 @@ document.body.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 
-var ambientlight = new THREE.AmbientLight(new THREE.Color(1, 1, 1), 10); //lightens up tires and headlights etc
-scene.add(ambientlight);
-
+let rotationAngle = 0
 let modifyObjects = []
+
+
+
+let model;
 //model mesh:
 const loader = new GLTFLoader();
 loader.load(
   "car_model/scene.gltf",
   function (gltf) {
-    var model = gltf.scene;
+    model = gltf.scene;
     console.log("Model loaded!"); //check if model is loaded
     model.traverse((o) => {
       if (o.isMesh) {
@@ -57,6 +59,7 @@ loader.load(
         }
       }
     });
+  
 
     gltf.scene.visible = true;
 
@@ -79,8 +82,10 @@ loader.load(
     console.error(error);
   }
 );
-let cameraMovement = false;
-var cameraDirection
+
+
+
+
 document.addEventListener("mousedown", function (event) {
   const mouse = new THREE.Vector2();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -93,10 +98,10 @@ document.addEventListener("mousedown", function (event) {
     console.log("Selected object:", selectedObject);
 
     if(selectedObject.name == 'Object_32') {
-      camera.lookAt(selectedObject.position);
+      z = camera.position.z 
       selectedObject.material = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red color
-      animateCameraTo(selectedObject.position)
-      cameraMovement = true
+  
+     
     }
   } else {
     console.log("Not an object");
@@ -105,34 +110,12 @@ document.addEventListener("mousedown", function (event) {
 
 
 
-function animateCameraTo(newPosition) {
-  var duration = 1000; 
-
-  var startPosition = camera.position.clone();
-  var startTime = performance.now();
-  var offset = new THREE.Vector3(3, 4, 12); // Offset to apply
-    var targetPosition = newPosition.clone().add(offset);
-
-  function updateCameraPosition() {
-      var currentTime = performance.now(); 
-      var elapsed = currentTime - startTime; 
-      
-      var progress = Math.min(elapsed / duration, 1);
-      var newPosition = new THREE.Vector3().lerpVectors(startPosition, targetPosition, progress);
-      camera.position.copy(newPosition)
-
-      renderer.render(scene, camera);
-      if (progress < 1) {
-          requestAnimationFrame(updateCameraPosition);
-      }
-  }
-
-  // Start the animation
-  updateCameraPosition();
-}
-
-
 var UpdateLoop = function () {
+
+
+  if (model) {
+      model.rotation.y -= 0.005;
+  }
 
   renderer.render(scene, camera);
   

@@ -24,7 +24,7 @@ scene.add(camera);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x222222, 1); //set color to grey
+renderer.setClearColor(0x00000, 1); //set color to grey
 
 const canvasContainer = document.getElementById('canvas-container');
 canvasContainer.appendChild(renderer.domElement);
@@ -43,6 +43,13 @@ scene.add(pointLight2);
 const pointLight3 = new THREE.PointLight(0xfffffff, 1000, 1000);
 pointLight3.position.set(-30, 0, 0); // Adjust position
 scene.add(pointLight3);
+
+let ambientLight = new THREE.AmbientLight( 0x00433, 100 ); // soft white light
+
+// Add the ambient light to the scene initially
+scene.add(ambientLight);
+ambientLight.visible = false
+
 
 const orbitControls = new OrbitControls(camera, renderer.domElement);
 orbitControls.enableRotate = true
@@ -102,7 +109,6 @@ document.addEventListener('mouseup', function(event) {
   slowMode = false;
 
   if (event.button === 0) {
-      // Hide black bars
       topBar.style.display = 'none';
       bottomBar.style.display = 'none';
   }
@@ -172,7 +178,8 @@ document.addEventListener("mousedown", function (event) {
   }
 });
 
-
+let drivingActivated = false;
+let spinning = true;
 function updateCameraPositions(model, slowMode) {
   const radius = 4; // Radius of the circular path
   const height = 2; // Height of the camera above the model
@@ -182,9 +189,14 @@ function updateCameraPositions(model, slowMode) {
         const center = model.position.clone();
         if (slowMode) {
             speed = 0.0001;
+           
+            ambientLight.visible = true
             shakeCamera(camera, 0.005)
+            
+            
         } else {
             speed = 0.0004;
+            ambientLight.visible = false
         }
 
         const angle = Date.now() * speed;
@@ -224,12 +236,47 @@ function shakeCamera(camera, intensity) {
 }
 
 
-var UpdateLoop = function () {
-  if (model) {
-   updateCameraPositions(model, slowMode);
-  
+function driveMode() {
+  drivingActivated = true
+  spinning = false
+  console.log("drivemode activated")
+
+const filteredObjects = modifyObjects.filter(obj => obj.name.toLowerCase().includes('wheel'));
+  console.log(filteredObjects)
+}
+const toggleButton = document.getElementById('btn'); // Assuming you have a button with id="toggleButton"
+toggleButton.addEventListener('click',driveMode );
+
+function wheelsMoving() {
+ 
+
+filteredObjects.forEach(obj => {
+    // Calculate the center of the object (assuming it's centered at its own local origin)
+    const boundingBox = new THREE.Box3().setFromObject(obj);
+    const center = new THREE.Vector3();
+    boundingBox.getCenter(center);
+
+    // Rotate the object around its center
+    obj.rotation.x += 0.1;
+
+    // Translate the object back to its original position after rotation
+    obj.position.sub(center);
+    obj.position.applyAxisAngle(new THREE.Vector3(1, 0, 0), 0); // Rotate the position
+    obj.position.add(center);
+});
 }
 
+
+
+var UpdateLoop = function () {
+  if (model && spinning) {
+   updateCameraPositions(model, slowMode);
+  }
+if(model && drivingActivated) {
+  //driving animation...
+  wheelsMoving()
+  camera.position.x = model.position.x + 10
+ }
   renderer.render(scene, camera);
   
   requestAnimationFrame(UpdateLoop);

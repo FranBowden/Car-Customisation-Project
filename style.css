@@ -34,3 +34,12 @@
 .bottom {
   bottom: 0;
 }
+
+.btn {
+  position: fixed;
+  top: 50%;
+  padding: 20px;
+  background-color: grey;
+
+  z-index: 9998; 
+}

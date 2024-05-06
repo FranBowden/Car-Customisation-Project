@@ -10,20 +10,21 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 //creating a scene
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  100
-);
+const fov = 75; 
+const aspect = window.innerWidth / window.innerHeight;
+const near = 0.1; 
+const far = 1000; 
+
+let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
 camera.position.set(0, 2, 4);
 camera.lookAt(0, 0, 1);
 scene.add(camera);
 
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x00111, 1); //set color to grey
+renderer.setClearColor(0x222222, 1); //set color to grey
 
 const canvasContainer = document.getElementById('canvas-container');
 canvasContainer.appendChild(renderer.domElement);
@@ -60,9 +61,9 @@ textureLoader.load(
       texture.wrapT = THREE.RepeatWrapping;
       texture.repeat.set(100, 100); // Adjust repeat values as needed
         const material = new THREE.MeshPhongMaterial({ map: texture,
-         // color: 0x000000,
+
           transparent: 1, // Black color
-          opacity: 0.5});
+          opacity: 0.4});
 
         // Create a plane mesh
         const planeMesh = new THREE.Mesh(planeGeometry, material);
@@ -79,10 +80,39 @@ textureLoader.load(
     }
 );
 
+let slowMode = false;
+
+// Toggle visibility of black bars on mouse down
+document.addEventListener('mousedown', function(event) {
+  const topBar = document.querySelector('.black-bar.top');
+  const bottomBar = document.querySelector('.black-bar.bottom');
+  slowMode = true
+  // Check if the left mouse button is pressed
+  if (event.button === 0) {
+    
+      topBar.style.display = 'block';
+      bottomBar.style.display = 'block';
+  }
+});
+
+// Hide black bars on mouse up
+document.addEventListener('mouseup', function(event) {
+  const topBar = document.querySelector('.black-bar.top');
+  const bottomBar = document.querySelector('.black-bar.bottom');
+  slowMode = false;
+
+  if (event.button === 0) {
+      // Hide black bars
+      topBar.style.display = 'none';
+      bottomBar.style.display = 'none';
+  }
+});
 
 
 let modifyObjects = []
 let model;
+
+
 
 const loader = new GLTFLoader();
 loader.load(
@@ -142,24 +172,63 @@ document.addEventListener("mousedown", function (event) {
   }
 });
 
-const radius = 4; // Radius of the circular path
-const speed = 0.0004; // Angular speed (radians per frame)
-const height = 2; // Height of the camera above the model
-var UpdateLoop = function () {
-  
-  if (model) {
-    const center = model.position.clone();
-   //   model.rotation.y -= 0.002; //rotate car 
-     
-       // Update camera position for circular motion
-       const angle = Date.now() * speed;
-       const x = center.x + Math.cos(angle) * radius;
-       const z = center.z + Math.sin(angle) * radius;
-       camera.position.set(x, center.y + height, z);
-       camera.lookAt(center);
 
- 
-  }
+function updateCameraPositions(model, slowMode) {
+  const radius = 4; // Radius of the circular path
+  const height = 2; // Height of the camera above the model
+  let speed
+
+    if (model) {
+        const center = model.position.clone();
+        if (slowMode) {
+            speed = 0.0001;
+            shakeCamera(camera, 0.005)
+        } else {
+            speed = 0.0004;
+        }
+
+        const angle = Date.now() * speed;
+        const x = center.x + Math.cos(angle) * radius;
+        const z = center.z + Math.sin(angle) * radius;
+        camera.lookAt(center);
+        // Set the position of the current camera
+        if (slowMode) {
+          camera.position.set(x, center.y + height, z);
+
+        } else {
+            camera.position.set(x, center.y + height, z);
+        }
+
+    
+    }
+}
+
+
+function shakeCamera(camera, intensity) {
+
+  const offsetX = (Math.random() - 0.5) * intensity;
+  const offsetY = (Math.random() - 0.5) * intensity;
+  const offsetZ = (Math.random() - 0.5) * intensity;
+
+  const offsetRotX = (Math.random() - 0.5) * intensity * Math.PI / 180;
+  const offsetRotY = (Math.random() - 0.5) * intensity * Math.PI / 180;
+  const offsetRotZ = (Math.random() - 0.5) * intensity * Math.PI / 180;
+
+  camera.position.x += offsetX;
+  camera.position.y += offsetY;
+  camera.position.z += offsetZ;
+
+  camera.rotation.x += offsetRotX;
+  camera.rotation.y += offsetRotY;
+  camera.rotation.z += offsetRotZ;
+}
+
+
+var UpdateLoop = function () {
+  if (model) {
+   updateCameraPositions(model, slowMode);
+  
+}
 
   renderer.render(scene, camera);
   

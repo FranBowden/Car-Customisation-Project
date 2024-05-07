@@ -304,16 +304,49 @@ function toggleButtons() { //toggle setting btn on and off
 }
 
 function assignColor() { //very basic idea behind changing color. Needs to be able to take in different mesh arrays
- let carBody = modifyObjects.filter(obj => obj.name.toLowerCase().includes('paint_0')); //gets the entire body paint 
- 
-  let material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); //red material (this needs to actually be selected in the color menu, not here)
-console.log("color")
-  carBody.forEach(mesh => {
-     
-      mesh.material = material; //assigns color to mesh
+
+  let colorMenu = document.getElementById('colorMenu')
+  let circles = document.querySelectorAll('#colorMenu .circle');
+
+  // Loop through each circle and assign its background color based on its ID
+  circles.forEach(function(circle) {
+      let colorId = circle.id;
+      circle.classList.add(colorId);
   });
+    if (colorMenu.style.display == 'none') {
+    
+      colorMenu.style.display = 'flex'
+      closeBtn.style.display = 'none';
+
+    } else {
+      colorMenu.style.display = 'none'
+      
+   
+    }
 }
 
+
+let circles = document.querySelectorAll('#colorMenu .circle');
+
+
+
+
+// Add click event listener to each circle
+circles.forEach(function(circle) {
+  circle.addEventListener('click', function() {
+    let carBody = modifyObjects.filter(obj => obj.name.toLowerCase().includes('paint_0')); //gets the entire body paint 
+      // Get the color ID of the clicked circle
+      let colorId = circle.id;
+
+      // Create a new material with the selected color
+      let material = new THREE.MeshStandardMaterial({ color: colorId });
+
+      // Assign the material to the meshes
+      carBody.forEach(mesh => {
+          mesh.material = material;
+      });
+  });
+});
 
 let bodyBtn = document.getElementById("bodybutton")
 bodyBtn.addEventListener('click', assignColor)

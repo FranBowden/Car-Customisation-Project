@@ -153,17 +153,27 @@ right: 40%;
   animation: fadeIn 1s ease-in-out;
 }
 
-.circle {
-  background-color: white;
-  width: 70px; 
-  height: 70px;
-  bottom: 10%;
-  left: 10%;
-  border-radius: 50%; 
+#colorMenu {
+  display: none; /* Use flexbox layout */
+  justify-content: center; /* Center the circles horizontally */
   position: fixed;
+  bottom: 10%;
+  left: 50%; /* Adjust as needed */
+  transform: translateX(-50%); /* Center the row of circles horizontally */
 }
 
-.circle:hover {
-  background-color: grey;
-  opacity: 0.5;
+
+.circle {
+  width: 70px;
+  height: 70px;
+  margin: 0 10px; 
+  border-radius: 50%;
 }
+
+
+.blue { background-color: rgba(12, 15, 174, 0.774); }
+.green { background-color: rgb(6, 100, 6); }
+.red { background-color: rgb(174, 18, 18); }
+.black { background-color: black; }
+.white { background-color: white; }
+.pink { background-color: rgb(228, 136, 151); }

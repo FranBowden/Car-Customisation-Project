@@ -62,7 +62,7 @@ const textureLoader = new THREE.TextureLoader();
 
 // Load the texture image
 textureLoader.load(
-    'concrete_floor.jpg',
+    'textures/concrete_floor.jpg',
     function(texture) {
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.RepeatWrapping;
@@ -71,17 +71,11 @@ textureLoader.load(
 
           transparent: 1, // Black color
           opacity: 0.4});
-
-        // Create a plane mesh
         const planeMesh = new THREE.Mesh(planeGeometry, material);
-
-        // Rotate the plane downwards
         planeMesh.rotation.x = -Math.PI / 2; // Rotate by -90 degrees around the x-axis
-
-        // Add the plane mesh to the scene
         scene.add(planeMesh);
     },
-    undefined, // onProgress callback (optional)
+    undefined,
     function(error) {
         console.error('Error loading texture:', error);
     }

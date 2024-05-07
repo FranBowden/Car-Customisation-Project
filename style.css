@@ -49,7 +49,7 @@
   top: 40%;
   left: 30%;
   background-color: azure;
-  background-image: url(editcolour.png);
+  background-image: url(icons/editcolour.png);
   background-size: cover;
   padding: 20px;
   border-radius: 8px;
@@ -63,7 +63,7 @@
   top: 40%;
   left: 40%;
   background-color: azure;
-  background-image: url(editcolour.png);
+  background-image: url(icons/editcolour.png);
   background-size: cover;
   padding: 20px;
   border-radius: 8px;

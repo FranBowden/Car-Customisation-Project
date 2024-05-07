@@ -5,7 +5,6 @@
  */
 
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 //creating a scene
@@ -21,6 +20,10 @@ camera.position.set(0, 2, 4);
 camera.lookAt(0, 0, 1);
 scene.add(camera);
 
+let slowMode = false;
+let drivingActivated = false;
+let spinning = true;
+let customMode = false;
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -51,9 +54,6 @@ scene.add(ambientLight);
 ambientLight.visible = false
 
 
-const orbitControls = new OrbitControls(camera, renderer.domElement);
-orbitControls.enableRotate = true
-
 // Create a plane geometry
 const planeGeometry = new THREE.PlaneGeometry(1000, 1000); // Adjust width and height as needed
 
@@ -81,19 +81,20 @@ textureLoader.load(
     }
 );
 
-let slowMode = false;
+
 
 // Toggle visibility of black bars on mouse down
 document.addEventListener('mousedown', function(event) {
+  if(!customMode) {
   const topBar = document.querySelector('.black-bar.top');
   const bottomBar = document.querySelector('.black-bar.bottom');
   slowMode = true
   // Check if the left mouse button is pressed
   if (event.button === 0) {
-    
       topBar.style.display = 'block';
       bottomBar.style.display = 'block';
   }
+}
 });
 
 // Hide black bars on mouse up
@@ -111,8 +112,6 @@ document.addEventListener('mouseup', function(event) {
 
 let modifyObjects = []
 let model;
-
-
 
 const loader = new GLTFLoader();
 loader.load(
@@ -153,7 +152,7 @@ loader.load(
     }
 );
 
-
+/*
 document.addEventListener("mousedown", function (event) {
   const mouse = new THREE.Vector2();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -171,9 +170,8 @@ document.addEventListener("mousedown", function (event) {
     console.log("Not an object");
   }
 });
+*/
 
-let drivingActivated = false;
-let spinning = true;
 function updateCameraPositions(model, slowMode) {
   const radius = 4; // Radius of the circular path
   const height = 2; // Height of the camera above the model
@@ -181,7 +179,7 @@ function updateCameraPositions(model, slowMode) {
 
     if (model) {
         const center = model.position.clone();
-        if (slowMode) {
+        if (slowMode && !customMode) {
             speed = 0.0001;
            
             ambientLight.visible = true
@@ -260,31 +258,50 @@ filteredObjects.forEach(obj => {
 });
 }
 
+let settingBtn = document.getElementById("settingBtn");
+let closeBtn = document.getElementById("closeBtn");
 
-let settingBtn = document.getElementById("settingBtn")
+
 
 settingBtn.addEventListener("click", function (event) {
+  toggleButtons();
+});
+
+closeBtn.addEventListener("click", function (event) {
+  toggleButtons();
+});
+
+function toggleButtons() {
   let buttons = document.querySelectorAll('.hiddenButton');
   buttons.forEach(function(button) {
     if (button.style.display === 'none') {
       button.style.display = 'block';
+      settingBtn.style.display = 'none';
+      closeBtn.style.display = 'block';
+      console.log("customMode");
+     
+      customMode = true;
     } else {
       button.style.display = 'none';
+      settingBtn.style.display = 'block';
+      closeBtn.style.display = 'none';
+      customMode = false;
     }
   });
-})
-
-
+}
 
 var UpdateLoop = function () {
-  if (model && spinning) {
+  if (model && !customMode) {
    updateCameraPositions(model, slowMode);
   }
+ 
+
 if(model && drivingActivated) {
   //driving animation...
   //wheelsMoving()
   camera.position.x = model.position.x + 10
  }
+
   renderer.render(scene, camera);
   
   requestAnimationFrame(UpdateLoop);

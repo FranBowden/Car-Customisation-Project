@@ -266,6 +266,16 @@ filteredObjects.forEach(obj => {
 });
 }
 
+function toggleButtons() {
+  var buttons = document.querySelectorAll('.hiddenButton');
+  buttons.forEach(function(button) {
+    if (button.style.display === 'none') {
+      button.style.display = 'block';
+    } else {
+      button.style.display = 'none';
+    }
+  });
+}
 
 
 var UpdateLoop = function () {
@@ -274,7 +284,7 @@ var UpdateLoop = function () {
   }
 if(model && drivingActivated) {
   //driving animation...
-  wheelsMoving()
+  //wheelsMoving()
   camera.position.x = model.position.x + 10
  }
   renderer.render(scene, camera);

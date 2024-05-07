@@ -86,7 +86,7 @@ if(!customMode) {
 // Toggle visibility of black bars on mouse down
 document.addEventListener('mousedown', function(event) {
   if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
-    return; // Exit early if the click occurred on the button
+    return; //exit if button is clicked instead
 }
   if(!customMode) {
   const topBar = document.querySelector('.black-bar.top');
@@ -103,7 +103,7 @@ document.addEventListener('mousedown', function(event) {
 // Hide black bars on mouse up
 document.addEventListener('mouseup', function(event) {
   if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
-    return; // Exit early if the click occurred on the button
+    return; //exit if button is clicked..
 }
   const topBar = document.querySelector('.black-bar.top');
   const bottomBar = document.querySelector('.black-bar.bottom');
@@ -179,20 +179,17 @@ document.addEventListener("mousedown", function (event) {
 });
 */
 
-function updateCameraPositions(model, slowMode) {
-  const radius = 4; // Radius of the circular path
-  const height = 2; // Height of the camera above the model
+function updateCameraPositions(model, slowMode) { //allows the camera to move around the car
+  const radius = 4; 
+  const height = 2; 
   let speed
 
     if (model) {
         const center = model.position.clone();
         if (slowMode && !customMode) {
             speed = 0.0001;
-           
             ambientLight.visible = true
             shakeCamera(camera, 0.005)
-            
-            
         } else {
             speed = 0.0004;
             ambientLight.visible = false
@@ -202,15 +199,13 @@ function updateCameraPositions(model, slowMode) {
         const x = center.x + Math.cos(angle) * radius;
         const z = center.z + Math.sin(angle) * radius;
         camera.lookAt(center);
-        // Set the position of the current camera
+       
         if (slowMode) {
           camera.position.set(x, center.y + height, z);
 
         } else {
             camera.position.set(x, center.y + height, z);
         }
-
-    
     }
 }
 
@@ -234,7 +229,7 @@ function shakeCamera(camera, intensity) {
   camera.rotation.z += offsetRotZ;
 }
 
-
+/*
 function driveMode() {
   drivingActivated = true
   spinning = false
@@ -264,11 +259,9 @@ filteredObjects.forEach(obj => {
     obj.position.add(center);
 });
 }
-
+*/
 let settingBtn = document.getElementById("settingBtn");
 let closeBtn = document.getElementById("closeBtn");
-
-
 
 settingBtn.addEventListener("click", function (event) {
   toggleButtons();
@@ -277,16 +270,16 @@ settingBtn.addEventListener("click", function (event) {
 closeBtn.addEventListener("click", function (event) {
   toggleButtons();
 });
-
-function toggleButtons() {
+let resetCam = new THREE.Vector3(0,2,4);
+function toggleButtons() { //toggle setting btn on and off
   let buttons = document.querySelectorAll('.hiddenButton');
   buttons.forEach(function(button) {
     if (button.style.display === 'none') {
       button.style.display = 'block';
       settingBtn.style.display = 'none';
-      closeBtn.style.display = 'block';
-      console.log("customMode");
-     
+      closeBtn.style.display = 'block';   
+      //camera.position.set(0, 2, 0);
+   
       customMode = true;
     } else {
       button.style.display = 'none';
@@ -297,17 +290,28 @@ function toggleButtons() {
   });
 }
 
+
 var UpdateLoop = function () {
   if (model && !customMode) {
    updateCameraPositions(model, slowMode);
   }
- 
+  
+  //reset camera position
+  if (customMode) {
+    let distance = camera.position.distanceTo(resetCam);
+    if (distance > 0.01) { 
+        camera.position.lerp(resetCam, 0.03);
+        camera.lookAt(0,0,1)
+    }
+  }
 
+ 
+/*
 if(model && drivingActivated) {
   //driving animation...
   //wheelsMoving()
   camera.position.x = model.position.x + 10
- }
+ }*/
 
   renderer.render(scene, camera);
   

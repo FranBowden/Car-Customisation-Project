@@ -24,6 +24,7 @@ let slowMode = false;
 let drivingActivated = false;
 let spinning = true;
 let customMode = false;
+let resetPosition = false
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -53,14 +54,9 @@ let ambientLight = new THREE.AmbientLight( 0x00433, 100 ); // soft white light
 scene.add(ambientLight);
 ambientLight.visible = false
 
-
-// Create a plane geometry
 const planeGeometry = new THREE.PlaneGeometry(1000, 1000); // Adjust width and height as needed
-
-// Create a texture loader
 const textureLoader = new THREE.TextureLoader();
 
-// Load the texture image
 textureLoader.load(
     'textures/concrete_floor.jpg',
     function(texture) {
@@ -159,7 +155,10 @@ loader.load(
     }
 );
 
-/*
+
+
+
+
 document.addEventListener("mousedown", function (event) {
   const mouse = new THREE.Vector2();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -177,7 +176,7 @@ document.addEventListener("mousedown", function (event) {
     console.log("Not an object");
   }
 });
-*/
+
 
 function updateCameraPositions(model, slowMode) { //allows the camera to move around the car
   const radius = 4; 
@@ -229,6 +228,12 @@ function shakeCamera(camera, intensity) {
   camera.rotation.z += offsetRotZ;
 }
 
+
+
+
+
+
+
 /*
 function driveMode() {
   drivingActivated = true
@@ -270,17 +275,24 @@ settingBtn.addEventListener("click", function (event) {
 closeBtn.addEventListener("click", function (event) {
   toggleButtons();
 });
-let resetCam = new THREE.Vector3(0,2,4);
+
+let resetCam = new THREE.Vector3(2,2,3);
+
 function toggleButtons() { //toggle setting btn on and off
   let buttons = document.querySelectorAll('.hiddenButton');
   buttons.forEach(function(button) {
     if (button.style.display === 'none') {
-      button.style.display = 'block';
+    
       settingBtn.style.display = 'none';
       closeBtn.style.display = 'block';   
-      //camera.position.set(0, 2, 0);
+      if(resetPosition) {
+  
+        button.classList.add("fade-in");
+        button.style.display = 'block';
+      }
    
       customMode = true;
+
     } else {
       button.style.display = 'none';
       settingBtn.style.display = 'block';
@@ -288,7 +300,23 @@ function toggleButtons() { //toggle setting btn on and off
       customMode = false;
     }
   });
+  resetPosition = false
 }
+
+function assignColor() { //very basic idea behind changing color. Needs to be able to take in different mesh arrays
+ let carBody = modifyObjects.filter(obj => obj.name.toLowerCase().includes('paint_0')); //gets the entire body paint 
+ 
+  let material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); //red material (this needs to actually be selected in the color menu, not here)
+console.log("color")
+  carBody.forEach(mesh => {
+     
+      mesh.material = material; //assigns color to mesh
+  });
+}
+
+
+let bodyBtn = document.getElementById("bodybutton")
+bodyBtn.addEventListener('click', assignColor)
 
 
 var UpdateLoop = function () {
@@ -302,8 +330,11 @@ var UpdateLoop = function () {
     if (distance > 0.01) { 
         camera.position.lerp(resetCam, 0.03);
         camera.lookAt(0,0,1)
+        resetPosition = true
     }
   }
+  
+
 
  
 /*
@@ -319,7 +350,6 @@ if(model && drivingActivated) {
 };
 
 requestAnimationFrame(UpdateLoop);
-
 
 
 

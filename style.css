@@ -43,3 +43,49 @@
 
   z-index: 9998; 
 }
+
+.wheelbutton{
+  position: fixed;
+  top: 40%;
+  left: 30%;
+  background-color: azure;
+  background-image: url(editcolour.png);
+  background-size: cover;
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+
+  z-index: 9995;
+}
+
+.bodybutton{
+  position: fixed;
+  top: 40%;
+  left: 40%;
+  background-color: azure;
+  background-image: url(editcolour.png);
+  background-size: cover;
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+
+  z-index: 9996;
+}
+
+.windowbutton{
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  background-color: azure;
+  background-image: url(editcolour.png);
+  background-size: cover;
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+
+  z-index: 9997;
+}
+
+.wheelbutton:hover,.bodybutton:hover,.windowbutton:hover{
+  background-color: darkgray;
+}

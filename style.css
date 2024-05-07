@@ -95,10 +95,6 @@
   display: none;
 }
 
-.show {
-  display: block !important;
-}
-
 #settingBtn {
   background-color: white;
   bottom: 10%;
@@ -106,6 +102,7 @@
   border-radius: 50%; 
   background-image: url(icons/setting-icon.png);
   background-repeat: no-repeat;
+  border: none;
   background-position: center;
   z-index: 9999;
   background-size: contain;

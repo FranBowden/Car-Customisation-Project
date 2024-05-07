@@ -260,8 +260,11 @@ filteredObjects.forEach(obj => {
 });
 }
 
-function toggleButtons() {
-  var buttons = document.querySelectorAll('.hiddenButton');
+
+let settingBtn = document.getElementById("settingBtn")
+
+settingBtn.addEventListener("click", function (event) {
+  let buttons = document.querySelectorAll('.hiddenButton');
   buttons.forEach(function(button) {
     if (button.style.display === 'none') {
       button.style.display = 'block';
@@ -269,7 +272,8 @@ function toggleButtons() {
       button.style.display = 'none';
     }
   });
-}
+})
+
 
 
 var UpdateLoop = function () {

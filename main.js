@@ -81,10 +81,13 @@ textureLoader.load(
     }
 );
 
-
+if(!customMode) {
 
 // Toggle visibility of black bars on mouse down
 document.addEventListener('mousedown', function(event) {
+  if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
+    return; // Exit early if the click occurred on the button
+}
   if(!customMode) {
   const topBar = document.querySelector('.black-bar.top');
   const bottomBar = document.querySelector('.black-bar.bottom');
@@ -99,6 +102,9 @@ document.addEventListener('mousedown', function(event) {
 
 // Hide black bars on mouse up
 document.addEventListener('mouseup', function(event) {
+  if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
+    return; // Exit early if the click occurred on the button
+}
   const topBar = document.querySelector('.black-bar.top');
   const bottomBar = document.querySelector('.black-bar.bottom');
   slowMode = false;
@@ -109,6 +115,7 @@ document.addEventListener('mouseup', function(event) {
   }
 });
 
+}
 
 let modifyObjects = []
 let model;

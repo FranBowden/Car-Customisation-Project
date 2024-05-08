@@ -32,9 +32,12 @@ renderer.setClearColor(0x00000, 1); //set color to grey
 
 const canvasContainer = document.getElementById('canvas-container');
 canvasContainer.appendChild(renderer.domElement);
-//document.body.appendChild(renderer.domElement);
 
-const progressBar = document.getElementById('progress-bar');
+let settingBtn = document.getElementById("settingBtn");
+let closeBtn = document.getElementById("closeBtn");
+
+settingBtn.style.display = 'none'
+
 
 const pointLight1 = new THREE.PointLight(0xfffffff, 1000, 1000); // Adjust color, intensity, and distance as needed
 pointLight1.position.set(0, 30, 0); // Adjust position
@@ -92,6 +95,7 @@ document.addEventListener('mousedown', function(event) {
   if (event.button === 0) {
       topBar.style.display = 'block';
       bottomBar.style.display = 'block';
+      settingBtn.style.display = 'none'
   }
 }
 });
@@ -107,6 +111,7 @@ document.addEventListener('mouseup', function(event) {
 
   if (event.button === 0) {
       topBar.style.display = 'none';
+      settingBtn.style.display = 'block'
       bottomBar.style.display = 'none';
   }
 });
@@ -120,7 +125,7 @@ const loader = new GLTFLoader();
 loader.load(
   "model/scene.gltf",
   function (gltf) {
-    document.getElementById('loader-menu').style.display = 'none';
+   
    
     
     model = gltf.scene;
@@ -144,12 +149,13 @@ loader.load(
     });
    
     scene.add(gltf.scene);
+
+    let progress = document.querySelector('.page-loader');
+    progress.style.display = 'none';
+    settingBtn.style.display = 'block'
   },
-  
-    (xhr) => { //progress bar - Needs updating..
-        const progress = (xhr.loaded / xhr.total) * 100;
-        progressBar.style.width = progress + '%';
-    },
+  undefined,
+   
     (error) => {
         console.error('Error loading GLTF model:', error);
     }
@@ -265,8 +271,6 @@ filteredObjects.forEach(obj => {
 });
 }
 */
-let settingBtn = document.getElementById("settingBtn");
-let closeBtn = document.getElementById("closeBtn");
 
 settingBtn.addEventListener("click", function (event) {
   toggleButtons();
@@ -284,13 +288,13 @@ function toggleButtons() { //toggle setting btn on and off
     if (button.style.display === 'none') {
     
       settingBtn.style.display = 'none';
-      closeBtn.style.display = 'block';   
+      closeBtn.style.display = 'block'; 
+      button.classList.add("fade-in");  
       if(resetPosition) {
-  
-        button.classList.add("fade-in");
+      
         button.style.display = 'block';
       }
-   
+    
       customMode = true;
 
     } else {
@@ -302,26 +306,52 @@ function toggleButtons() { //toggle setting btn on and off
   });
   resetPosition = false
 }
+let bodyBtn = document.getElementById("bodybutton") 
+let wheelColorBtn = document.getElementById("wheelbutton") 
+let windowColorBtn = document.getElementById("windowbutton")
+
+
+function filterObject() {
+  bodyBtn.addEventListener('click', function() {
+    let carBody = modifyObjects.filter(obj => obj.name.toLowerCase().includes('paint_0')); //gets the entire body paint 
+    assignColor()
+    changeColor(carBody)
+  })
+
+  wheelColorBtn.addEventListener('click', function() {
+    let wheels = modifyObjects.filter(obj => obj.name.toLowerCase().includes('wheel_05')); //gets the entire body paint 
+    assignColor()
+    changeColor(wheels)
+  })
+
+  windowColorBtn.addEventListener('click', function() {
+    let window = modifyObjects.filter(obj => obj.name.toLowerCase().includes('r35_windshield')); //gets the entire body paint 
+    assignColor()
+    changeColor(window)
+  })
+
+}
+
+filterObject()
+
+
+
 
 function assignColor() { //very basic idea behind changing color. Needs to be able to take in different mesh arrays
-
   let colorMenu = document.getElementById('colorMenu')
   let circles = document.querySelectorAll('#colorMenu .circle');
-
-  // Loop through each circle and assign its background color based on its ID
   circles.forEach(function(circle) {
       let colorId = circle.id;
-      circle.classList.add(colorId);
+      circle.classList.add(colorId)
   });
     if (colorMenu.style.display == 'none') {
     
       colorMenu.style.display = 'flex'
-      closeBtn.style.display = 'none';
-
+      closeBtn.style.display = 'none'
+      settingBtn.style.display = 'none'
     } else {
       colorMenu.style.display = 'none'
-      
-   
+      closeBtn.style.display = 'block'
     }
 }
 
@@ -329,53 +359,38 @@ function assignColor() { //very basic idea behind changing color. Needs to be ab
 let circles = document.querySelectorAll('#colorMenu .circle');
 
 
+function changeColor(CarMesh) {
 
-
-// Add click event listener to each circle
-circles.forEach(function(circle) {
-  circle.addEventListener('click', function() {
-    let carBody = modifyObjects.filter(obj => obj.name.toLowerCase().includes('paint_0')); //gets the entire body paint 
-      // Get the color ID of the clicked circle
-      let colorId = circle.id;
-
-      // Create a new material with the selected color
-      let material = new THREE.MeshStandardMaterial({ color: colorId });
-
-      // Assign the material to the meshes
-      carBody.forEach(mesh => {
-          mesh.material = material;
-      });
+  circles.forEach(function(circle) {
+    circle.addEventListener('click', function() {
+       
+       
+        let colorId = circle.id;
+  
+        let material = new THREE.MeshStandardMaterial({ color: colorId });
+        closeBtn.style.display = 'none';
+        settingBtn.style.display = 'none'
+       
+        CarMesh.forEach(mesh => {
+            mesh.material = material;
+        });
+    });
   });
-});
-
-let bodyBtn = document.getElementById("bodybutton")
-bodyBtn.addEventListener('click', assignColor)
-
+}
 
 var UpdateLoop = function () {
   if (model && !customMode) {
    updateCameraPositions(model, slowMode);
   }
+
   
-  //reset camera position
-  if (customMode) {
     let distance = camera.position.distanceTo(resetCam);
     if (distance > 0.01) { 
         camera.position.lerp(resetCam, 0.03);
         camera.lookAt(0,0,1)
         resetPosition = true
     }
-  }
   
-
-
- 
-/*
-if(model && drivingActivated) {
-  //driving animation...
-  //wheelsMoving()
-  camera.position.x = model.position.x + 10
- }*/
 
   renderer.render(scene, camera);
   

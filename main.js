@@ -1,7 +1,7 @@
 /*To do List:
- * Allow car to be seperated into different components
- * Add camera animation
- * Get the GUI loaded
+*add camera animation for each button
+*hide buttons once a button has been clicked
+*add more options 
  */
 
 import * as THREE from "three";
@@ -9,36 +9,38 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 //creating a scene
 const scene = new THREE.Scene();
-const fov = 75; 
+const fov = 75;
 const aspect = window.innerWidth / window.innerHeight;
-const near = 0.1; 
-const far = 1000; 
+const near = 0.1;
+const far = 1000;
 
 let camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 
-camera.position.set(0, 2, 4);
+camera.position.set(2, 2, 4);
 camera.lookAt(0, 0, 1);
 scene.add(camera);
 
 let slowMode = false;
-let drivingActivated = false;
-let spinning = true;
 let customMode = false;
-let resetPosition = false
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x00000, 1); //set color to grey
 
-const canvasContainer = document.getElementById('canvas-container');
+const canvasContainer = document.getElementById("canvas-container");
 canvasContainer.appendChild(renderer.domElement);
 
 let settingBtn = document.getElementById("settingBtn");
 let closeBtn = document.getElementById("closeBtn");
 
-settingBtn.style.display = 'none'
+let loading = true;
 
-
+function preloader() {
+  let loading = true;
+  settingBtn.style.display = "none";
+  closeBtn.style.display = "none";
+}
+preloader();
 const pointLight1 = new THREE.PointLight(0xfffffff, 1000, 1000); // Adjust color, intensity, and distance as needed
 pointLight1.position.set(0, 30, 0); // Adjust position
 scene.add(pointLight1);
@@ -51,120 +53,110 @@ const pointLight3 = new THREE.PointLight(0xfffffff, 1000, 1000);
 pointLight3.position.set(-30, 0, 0); // Adjust position
 scene.add(pointLight3);
 
-let ambientLight = new THREE.AmbientLight( 0x00433, 100 ); // soft white light
+let ambientLight = new THREE.AmbientLight(0x00433, 100); // soft white light
 
 // Add the ambient light to the scene initially
 scene.add(ambientLight);
-ambientLight.visible = false
+ambientLight.visible = false;
 
 const planeGeometry = new THREE.PlaneGeometry(1000, 1000); // Adjust width and height as needed
 const textureLoader = new THREE.TextureLoader();
 
 textureLoader.load(
-    'textures/concrete_floor.jpg',
-    function(texture) {
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(100, 100); // Adjust repeat values as needed
-        const material = new THREE.MeshPhongMaterial({ map: texture,
-
-          transparent: 1, // Black color
-          opacity: 0.4});
-        const planeMesh = new THREE.Mesh(planeGeometry, material);
-        planeMesh.rotation.x = -Math.PI / 2; // Rotate by -90 degrees around the x-axis
-        scene.add(planeMesh);
-    },
-    undefined,
-    function(error) {
-        console.error('Error loading texture:', error);
-    }
+  "textures/concrete_floor.jpg",
+  function (texture) {
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(100, 100); // Adjust repeat values as needed
+    const material = new THREE.MeshPhongMaterial({
+      map: texture,
+      transparent: 1,
+      opacity: 0.4,
+    });
+    const planeMesh = new THREE.Mesh(planeGeometry, material);
+    planeMesh.rotation.x = -Math.PI / 2; // Rotate by -90 degrees around the x-axis
+    scene.add(planeMesh);
+  },
+  undefined,
+  function (error) {
+    console.error("Error loading texture:", error);
+  }
 );
 
-if(!customMode) {
-
-// Toggle visibility of black bars on mouse down
-document.addEventListener('mousedown', function(event) {
-  if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
-    return; //exit if button is clicked instead
-}
-  if(!customMode) {
-  const topBar = document.querySelector('.black-bar.top');
-  const bottomBar = document.querySelector('.black-bar.bottom');
-  slowMode = true
-  // Check if the left mouse button is pressed
-  if (event.button === 0) {
-      topBar.style.display = 'block';
-      bottomBar.style.display = 'block';
-      settingBtn.style.display = 'none'
-  }
-}
-});
-
-// Hide black bars on mouse up
-document.addEventListener('mouseup', function(event) {
-  if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
-    return; //exit if button is clicked..
-}
-  const topBar = document.querySelector('.black-bar.top');
-  const bottomBar = document.querySelector('.black-bar.bottom');
-  slowMode = false;
-
-  if (event.button === 0) {
-      topBar.style.display = 'none';
-      settingBtn.style.display = 'block'
-      bottomBar.style.display = 'none';
-  }
-});
-
-}
-
-let modifyObjects = []
+let modifyObjects = [];
 let model;
 
 const loader = new GLTFLoader();
 loader.load(
   "model/scene.gltf",
   function (gltf) {
-   
-   
-    
     model = gltf.scene;
     console.log("Model loaded!"); //check if model is loaded
     model.traverse((child) => {
       if (child.isMesh) {
-        
         const material = new THREE.MeshStandardMaterial({
           color: child.material.color, // You may want to preserve existing color
-    
-      });
+        });
         material.metalness = 1;
         console.log("Material:", material); // the material properties
         modifyObjects.push(child);
-        
+
         if (material.map) {
           console.log("Texture loaded:", material.map.image.src); //check texture source
         }
-       
       }
     });
-   
+
     scene.add(gltf.scene);
 
-    let progress = document.querySelector('.page-loader');
-    progress.style.display = 'none';
-    settingBtn.style.display = 'block'
+    loading = false;
+    let progress = document.querySelector(".page-loader");
+    progress.style.display = "none";
+    settingBtn.style.display = "block";
   },
   undefined,
-   
-    (error) => {
-        console.error('Error loading GLTF model:', error);
-    }
+
+  (error) => {
+    console.error("Error loading GLTF model:", error);
+  }
 );
 
 
+if (!customMode) {
+  // Toggle visibility of black bars on mouse down
+  document.addEventListener("mousedown", function (event) {
+    if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
+      return; //exit if button is clicked instead
+    }
+    if (!customMode) {
+      const topBar = document.querySelector(".black-bar.top");
+      const bottomBar = document.querySelector(".black-bar.bottom");
+      slowMode = true;
+      // Check if the left mouse button is pressed
+      if (event.button === 0) {
+        topBar.style.display = "block";
+        bottomBar.style.display = "block";
+        settingBtn.style.display = "none";
+      }
+    }
+  });
 
+  // Hide black bars on mouse up
+  document.addEventListener("mouseup", function (event) {
+    if (settingBtn.contains(event.target) || closeBtn.contains(event.target)) {
+      return; //exit if button is clicked..
+    }
+    const topBar = document.querySelector(".black-bar.top");
+    const bottomBar = document.querySelector(".black-bar.bottom");
+    slowMode = false;
 
-
+    if (event.button === 0) {
+      topBar.style.display = "none";
+      settingBtn.style.display = "block";
+      bottomBar.style.display = "none";
+    }
+  });
+}
 document.addEventListener("mousedown", function (event) {
   const mouse = new THREE.Vector2();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -173,57 +165,50 @@ document.addEventListener("mousedown", function (event) {
   raycaster.setFromCamera(mouse, camera);
   let intersects = raycaster.intersectObjects(modifyObjects, true);
   if (intersects.length > 0) {
- 
     const selectedObject = intersects[0].object;
     console.log("Selected object:", selectedObject);
-
-        
   } else {
     console.log("Not an object");
   }
 });
 
+function updateCameraPositions(model, slowMode) {   //allows the camera to move around the car
+  const radius = 4;
+  const height = 2;
+  let speed;
 
-function updateCameraPositions(model, slowMode) { //allows the camera to move around the car
-  const radius = 4; 
-  const height = 2; 
-  let speed
-
-    if (model) {
-        const center = model.position.clone();
-        if (slowMode && !customMode) {
-            speed = 0.0001;
-            ambientLight.visible = true
-            shakeCamera(camera, 0.005)
-        } else {
-            speed = 0.0004;
-            ambientLight.visible = false
-        }
-
-        const angle = Date.now() * speed;
-        const x = center.x + Math.cos(angle) * radius;
-        const z = center.z + Math.sin(angle) * radius;
-        camera.lookAt(center);
-       
-        if (slowMode) {
-          camera.position.set(x, center.y + height, z);
-
-        } else {
-            camera.position.set(x, center.y + height, z);
-        }
+  if (model) {
+    const center = model.position.clone();
+    if (slowMode && !customMode) {
+      speed = 0.0001;
+      ambientLight.visible = true;
+      shakeCamera(camera, 0.005);
+    } else {
+      speed = 0.0004;
+      ambientLight.visible = false;
     }
+
+    const angle = Date.now() * speed;
+    const x = center.x + Math.cos(angle) * radius;
+    const z = center.z + Math.sin(angle) * radius;
+    camera.lookAt(center);
+
+    if (slowMode) {
+      camera.position.set(x, center.y + height, z);
+    } else {
+      camera.position.set(x, center.y + height, z);
+    }
+  }
 }
 
-
 function shakeCamera(camera, intensity) {
-
   const offsetX = (Math.random() - 0.5) * intensity;
   const offsetY = (Math.random() - 0.5) * intensity;
   const offsetZ = (Math.random() - 0.5) * intensity;
 
-  const offsetRotX = (Math.random() - 0.5) * intensity * Math.PI / 180;
-  const offsetRotY = (Math.random() - 0.5) * intensity * Math.PI / 180;
-  const offsetRotZ = (Math.random() - 0.5) * intensity * Math.PI / 180;
+  const offsetRotX = ((Math.random() - 0.5) * intensity * Math.PI) / 180;
+  const offsetRotY = ((Math.random() - 0.5) * intensity * Math.PI) / 180;
+  const offsetRotZ = ((Math.random() - 0.5) * intensity * Math.PI) / 180;
 
   camera.position.x += offsetX;
   camera.position.y += offsetY;
@@ -233,12 +218,6 @@ function shakeCamera(camera, intensity) {
   camera.rotation.y += offsetRotY;
   camera.rotation.z += offsetRotZ;
 }
-
-
-
-
-
-
 
 /*
 function driveMode() {
@@ -271,8 +250,10 @@ filteredObjects.forEach(obj => {
 });
 }
 */
-
+let defaultCamView = new THREE.Vector3(2, 2, 3);
+let defaultCam = false;
 settingBtn.addEventListener("click", function (event) {
+  defaultCam = true;
   toggleButtons();
 });
 
@@ -280,126 +261,132 @@ closeBtn.addEventListener("click", function (event) {
   toggleButtons();
 });
 
-let resetCam = new THREE.Vector3(2,2,3);
-
-function toggleButtons() { //toggle setting btn on and off
-  let buttons = document.querySelectorAll('.hiddenButton');
-  buttons.forEach(function(button) {
-    if (button.style.display === 'none') {
-    
-      settingBtn.style.display = 'none';
-      closeBtn.style.display = 'block'; 
-      button.classList.add("fade-in");  
-      if(resetPosition) {
-      
-        button.style.display = 'block';
-      }
-    
+function toggleButtons() {
+  //toggle setting btn on and off
+  let buttons = document.querySelectorAll(".hiddenButton");
+  buttons.forEach(function (button) {
+    if (button.style.display === "none") {
+      settingBtn.style.display = "none";
+      closeBtn.style.display = "block";
+      button.classList.add("fade-in");
+      button.style.display = "block";
       customMode = true;
-
     } else {
-      button.style.display = 'none';
-      settingBtn.style.display = 'block';
-      closeBtn.style.display = 'none';
+      button.style.display = "none";
+      settingBtn.style.display = "block";
+      closeBtn.style.display = "none";
       customMode = false;
     }
   });
-  resetPosition = false
 }
-let bodyBtn = document.getElementById("bodybutton") 
-let wheelColorBtn = document.getElementById("wheelbutton") 
-let windowColorBtn = document.getElementById("windowbutton")
+let bodyBtn = document.getElementById("bodybutton");
+let wheelColorBtn = document.getElementById("wheelbutton");
+let windowColorBtn = document.getElementById("windowbutton");
 
+let windowCam = false;
+let wheelCam = false;
 
 function filterObject() {
-  bodyBtn.addEventListener('click', function() {
-    let carBody = modifyObjects.filter(obj => obj.name.toLowerCase().includes('paint_0')); //gets the entire body paint 
-    assignColor()
-    changeColor(carBody)
-  })
-
-  wheelColorBtn.addEventListener('click', function() {
-    let wheels = modifyObjects.filter(obj => obj.name.toLowerCase().includes('wheel_05')); //gets the entire body paint 
-    assignColor()
-    changeColor(wheels)
-  })
-
-  windowColorBtn.addEventListener('click', function() {
-    let window = modifyObjects.filter(obj => obj.name.toLowerCase().includes('r35_windshield')); //gets the entire body paint 
-    assignColor()
-    changeColor(window)
-  })
-
-}
-
-filterObject()
-
-
-
-
-function assignColor() { //very basic idea behind changing color. Needs to be able to take in different mesh arrays
-  let colorMenu = document.getElementById('colorMenu')
-  let circles = document.querySelectorAll('#colorMenu .circle');
-  circles.forEach(function(circle) {
-      let colorId = circle.id;
-      circle.classList.add(colorId)
+  bodyBtn.addEventListener("click", function () {
+    let carBody = modifyObjects.filter((obj) =>
+      obj.name.toLowerCase().includes("paint_0")
+    ); //gets the entire body paint
+    assignColor();
+    changeColor(carBody);
+    wheelCam = false;
+    windowCam = false;
+    defaultCam = true;
   });
-    if (colorMenu.style.display == 'none') {
-    
-      colorMenu.style.display = 'flex'
-      closeBtn.style.display = 'none'
-      settingBtn.style.display = 'none'
-    } else {
-      colorMenu.style.display = 'none'
-      closeBtn.style.display = 'block'
-    }
+
+  wheelColorBtn.addEventListener("click", function () {
+    let wheels = modifyObjects.filter((obj) =>
+      obj.name.toLowerCase().includes("wheel_05")
+    ); //gets the entire body paint
+    assignColor();
+    wheelCam = true;
+    windowCam = false;
+    changeColor(wheels);
+  });
+
+  windowColorBtn.addEventListener("click", function () {
+    let window = modifyObjects.filter((obj) =>
+      obj.name.toLowerCase().includes("r35_windshield")
+    ); //gets the entire body paint
+    assignColor();
+    changeColor(window);
+    windowCam = true;
+    wheelCam = false;
+  });
 }
 
+filterObject();
 
-let circles = document.querySelectorAll('#colorMenu .circle');
+let wheelCamView = new THREE.Vector3(2, -0.5, 0);
+let windowCamView = new THREE.Vector3(2, 2, 3);
+let backCamView = new THREE.Vector3(2, 2, 3);
 
+function assignColor() {
+  //very basic idea behind changing color. Needs to be able to take in different mesh arrays
+  let colorMenu = document.getElementById("colorMenu");
+  let circles = document.querySelectorAll("#colorMenu .circle");
+  circles.forEach(function (circle) {
+    let colorId = circle.id;
+    circle.classList.add(colorId);
+  });
+  if (colorMenu.style.display == "none") {
+    colorMenu.style.display = "flex";
+    closeBtn.style.display = "none";
+    settingBtn.style.display = "none";
+  } else {
+    colorMenu.style.display = "none";
+    closeBtn.style.display = "block";
+  }
+}
+
+let circles = document.querySelectorAll("#colorMenu .circle");
 
 function changeColor(CarMesh) {
+  circles.forEach(function (circle) {
+    circle.addEventListener("click", function () {
+      let colorId = circle.id;
 
-  circles.forEach(function(circle) {
-    circle.addEventListener('click', function() {
-       
-       
-        let colorId = circle.id;
-  
-        let material = new THREE.MeshStandardMaterial({ color: colorId });
-        closeBtn.style.display = 'none';
-        settingBtn.style.display = 'none'
-       
-        CarMesh.forEach(mesh => {
-            mesh.material = material;
-        });
+      let material = new THREE.MeshStandardMaterial({ color: colorId });
+      closeBtn.style.display = "none";
+      settingBtn.style.display = "none";
+
+      CarMesh.forEach((mesh) => {
+        mesh.material = material;
+      });
     });
   });
 }
 
+function moveCamera(pos) {
+  let distance = camera.position.distanceTo(pos);
+  if (distance > 0.01) {
+    camera.position.lerp(pos, 0.03);
+    camera.lookAt(0, 0, 1);
+  }
+}
+
 var UpdateLoop = function () {
   if (model && !customMode) {
-   updateCameraPositions(model, slowMode);
+    updateCameraPositions(model, slowMode);
+  }
+  if (defaultCam) {
+    moveCamera(defaultCamView);
   }
 
-  
-    let distance = camera.position.distanceTo(resetCam);
-    if (distance > 0.01) { 
-        camera.position.lerp(resetCam, 0.03);
-        camera.lookAt(0,0,1)
-        resetPosition = true
-    }
-  
+  if (wheelCam) {
+    moveCamera(wheelCamView);
+  }
 
   renderer.render(scene, camera);
-  
+
   requestAnimationFrame(UpdateLoop);
 };
 
 requestAnimationFrame(UpdateLoop);
-
-
 
 //this function is called when the window is resized
 var MyResize = function () {

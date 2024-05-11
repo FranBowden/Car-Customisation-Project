@@ -1,13 +1,18 @@
 import * as THREE from "three";
 import { loadModel, modifyObjects, model } from "./modelLoader.js";
-//import { wheelCam } from "./customiseView.js";
-import {speed} from "./cinematicView.js"
+import {speed} from "./cinematicView.js";
+import { wheelCam, defaultCam, windowCam, customMode } from "./customiseView.js";
 
-export let settingBtn = document.getElementById("settingBtn");
-export let closeBtn = document.getElementById("closeBtn");
+export const settingBtn = document.getElementById("settingBtn");
+export const closeBtn = document.getElementById("closeBtn");
 export let slowMode = false;
-export let customMode = false;
 
+
+
+let wheelCamView = new THREE.Vector3(2, -0.5, 0);
+let windowCamView = new THREE.Vector3(0, 3, 3);
+let backCamView = new THREE.Vector3(2, 2, 3);
+let defaultCamView = new THREE.Vector3(3, 2, 3);
 const scene = new THREE.Scene();
 
 loadModel(scene);
@@ -65,7 +70,7 @@ document.addEventListener("mousedown", function (event) {
 function updateCameraPositions(model, slowMode) {
   const radius = 4, height = 2;
 
-  if (model) {
+  if (!customMode) { //continue to spin
     const center = model.position.clone();
   
     const angle = Date.now() * speed;
@@ -81,21 +86,32 @@ function updateCameraPositions(model, slowMode) {
   }
 }
 
-
-let defaultCamView = new THREE.Vector3(2, 2, 3);
+function moveCamera(pos) {
+  let distance = camera.position.distanceTo(pos);
+  if (distance > 0.01) {
+    camera.position.lerp(pos, 0.03);
+    camera.lookAt(0, 0, 1);
+  }
+}
 
 
 var UpdateLoop = function () {
-  if (model) {
+  if (model ) {
     updateCameraPositions(model, slowMode);
   }
-  //if (defaultCam) {
-    //moveCamera(defaultCamView);
-  //}
-  //if (wheelCam) {
-   // moveCamera(wheelCamView);
-  //}
 
+  if(defaultCam) {
+    moveCamera(defaultCamView)
+  }
+
+  if(wheelCam) {
+    moveCamera(wheelCamView)
+  }
+
+  if(windowCam) {
+    moveCamera(windowCamView)
+  }
+    
   renderer.render(scene, camera);
 
   requestAnimationFrame(UpdateLoop);

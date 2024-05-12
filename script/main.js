@@ -1,21 +1,25 @@
 import * as THREE from "three";
 import { loadModel, modifyObjects, model } from "./modelLoader.js";
-import {speed} from "./cinematicView.js";
-import { wheelCam, defaultCam, windowCam, customMode } from "./customiseView.js";
+import { speed } from "./cinematicView.js";
+import {
+  wheelCam,
+  defaultCam,
+  windowCam,
+  insideCam,
+  lightCam,
+  customMode,
+} from "./customiseView.js";
 
 export const settingBtn = document.getElementById("settingBtn");
 export const closeBtn = document.getElementById("closeBtn");
 export let slowMode = false;
 
-
-
-let wheelCamView = new THREE.Vector3(2, -0.5, 0);
+let wheelCamView = new THREE.Vector3(2, 0.5, 2);
 let windowCamView = new THREE.Vector3(0, 3, 3);
-let backCamView = new THREE.Vector3(2, 2, 3);
+let headlights = new THREE.Vector3(0, 2, 3.5);
 let defaultCamView = new THREE.Vector3(3, 2, 3);
+let insideCamView = new THREE.Vector3(0, 1.2, -0.5);
 const scene = new THREE.Scene();
-
-loadModel(scene);
 
 let camera = new THREE.PerspectiveCamera(
   75,
@@ -24,9 +28,10 @@ let camera = new THREE.PerspectiveCamera(
   1000
 );
 
+loadModel(scene);
+
 camera.position.set(2, 2, 4);
 scene.add(camera);
-
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -47,6 +52,11 @@ const pointLight3 = new THREE.PointLight(0xfffffff, 1000, 1000);
 pointLight3.position.set(-30, 0, 0);
 scene.add(pointLight3);
 
+const pointLight4 = new THREE.PointLight(0xfffffff, 700, 700);
+pointLight4.position.set(0, 2, -5);
+scene.add(pointLight4);
+
+pointLight4.visible = false;
 export let ambientLight = new THREE.AmbientLight(0x00433, 100);
 
 scene.add(ambientLight);
@@ -67,22 +77,28 @@ document.addEventListener("mousedown", function (event) {
   }
 });
 
-function updateCameraPositions(model, slowMode) {
-  const radius = 4, height = 2;
+let previousTime = Date.now();
+let previousAngle = 0;
 
-  if (!customMode) { //continue to spin
+function updateCameraPositions(model) {
+  if (!customMode) {
+    const radius = 4,
+      height = 2;
     const center = model.position.clone();
-  
-    const angle = Date.now() * speed;
-    const x = center.x + Math.cos(angle) * radius;
-    const z = center.z + Math.sin(angle) * radius;
+
+    let currentTime = Date.now(); //calculate time and elapsed time
+    let elapsedTime = currentTime - previousTime;
+    previousTime = currentTime;
+
+    let currentAngle = previousAngle + speed * elapsedTime;
+
+    let x = center.x + Math.cos(currentAngle) * radius;
+    let z = center.z + Math.sin(currentAngle) * radius;
+
+    camera.position.set(x, center.y + height, z);
     camera.lookAt(center);
 
-    if (slowMode) {
-      camera.position.set(x, center.y + height, z);
-    } else {
-      camera.position.set(x, center.y + height, z);
-    }
+    previousAngle = currentAngle;
   }
 }
 
@@ -94,24 +110,31 @@ function moveCamera(pos) {
   }
 }
 
-
 var UpdateLoop = function () {
-  if (model ) {
-    updateCameraPositions(model, slowMode);
+  if (model) {
+    updateCameraPositions(model);
   }
 
-  if(defaultCam) {
-    moveCamera(defaultCamView)
+  if (defaultCam) {
+    moveCamera(defaultCamView);
   }
 
-  if(wheelCam) {
-    moveCamera(wheelCamView)
+  if (wheelCam) {
+    moveCamera(wheelCamView);
   }
 
-  if(windowCam) {
-    moveCamera(windowCamView)
+  if (windowCam) {
+    moveCamera(windowCamView);
   }
-    
+
+  if (lightCam) {
+    moveCamera(headlights);
+  }
+
+  if (insideCam) {
+    moveCamera(insideCamView);
+    pointLight4.visible = true;
+  }
   renderer.render(scene, camera);
 
   requestAnimationFrame(UpdateLoop);

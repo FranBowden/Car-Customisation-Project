@@ -36,16 +36,13 @@ export function loadModel(scene) {
     "model/scene.gltf",
     function (gltf) {
       model = gltf.scene;
-      console.log("Model loaded!");
       model.traverse((child) => {
         if (child.isMesh) {
+          modifyObjects.push(child);
           const material = new THREE.MeshStandardMaterial({
             color: child.material.color,
           });
-          material.metalness = 1;
           console.log("Material:", material);
-          modifyObjects.push(child);
-
           if (material.map) {
             console.log("Texture loaded:", material.map.image.src); //check texture source
           }

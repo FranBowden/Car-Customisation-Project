@@ -66,13 +66,46 @@ right: 40%;
   z-index: 9997;
 }
 
-.wheelbutton:hover,.bodybutton:hover,.windowbutton:hover{
+.wheelbutton:hover,.bodybutton:hover,.windowbutton:hover,#viewInsideCar:hover,#lightButton:hover{
   background-color: darkgray;
 
 }
 
 .hiddenButton {
+  opacity: 65%;
   display: none;
+}
+
+#lightButton {
+  position: fixed;
+  top: 60%;
+  left: 38%;
+  background-color: azure;
+  background-image: url(icons/light.png);
+  background-position: center;
+  background-size: 80%;
+  background-repeat: no-repeat;
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  box-shadow: 0px 0px 3px 1px rgb(150, 150, 150);
+  z-index: 9997;
+}
+
+#viewInsideCar {
+  position: fixed;
+  top: 12%;
+  left: 60%;
+  background-color: azure;
+  background-image: url(icons/inside.png);
+  background-position: center;
+  background-size: 80%;
+  background-repeat: no-repeat;
+  padding: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  box-shadow: 0px 0px 3px 1px rgb(150, 150, 150);
+  z-index: 9997;
 }
 #settingBtn {
   background-color: white;
@@ -149,7 +182,6 @@ right: 40%;
   left: 50%; 
   transform: translateX(-50%); 
 }
-
 
 .circle {
   width: 70px;

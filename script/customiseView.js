@@ -15,6 +15,8 @@ const wheelColorBtn = document.getElementById("wheelbutton");
 const windowColorBtn = document.getElementById("windowbutton");
 const viewInside = document.getElementById("viewInsideCar");
 const lightBtn = document.getElementById("lightButton")
+const closeMenuBtn = document.getElementById("closeMenuBtn")
+
 
 function toggleCameras(currentCam) {
   defaultCam = false;
@@ -45,14 +47,16 @@ function toggleCameras(currentCam) {
   }
 }
 
+
+
 document.addEventListener("DOMContentLoaded", function () {
-  document.body.addEventListener("click", function (event) {
+  document.body.addEventListener("click", function () {
     if (!cinematicView) {
       settingBtn.style.display = "none";
     }
   });
 
-  settingBtn.addEventListener("click", function (event) {
+  settingBtn.addEventListener("click", function () {
     cinematicView = false;
     customMode = true;
     defaultCam = true;
@@ -60,14 +64,22 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleCustomButtons(true);
   });
 
-  closeBtn.addEventListener("click", function (event) {
+  closeBtn.addEventListener("click", function () {
     cinematicView = true;
     customMode = false;
     defaultCam = false;
     toggleButtons(false);
     toggleCustomButtons(false);
+    
     colorMenu.style.display = "none";
   });
+
+  closeMenuBtn.addEventListener("click", function() {
+    toggleCameras("defaultCam");
+    toggleCustomButtons(true);
+    toggleColorMenu(false)
+    closeBtn.style.display = "block"
+  })
 
   viewInside.addEventListener("click", function () {
     toggleCameras("insideCam");
@@ -80,35 +92,35 @@ document.addEventListener("DOMContentLoaded", function () {
       .filter((obj) => obj.name.toLowerCase().includes("headlight"))
 
     toggleCameras("lightCam");
-    toggleColorMenu();
     toggleCustomButtons(false);
     toggleButtons(true);
+    toggleColorMenu(true);
     changeColor(headlights);
   });
 
   bodyBtn.addEventListener("click", function () {
     let carBody = modifyObjects
       .filter((obj) => obj.name.toLowerCase().includes("paint_0"))
-      .slice();
-
+      .map(obj => obj.clone());
     toggleCameras("defaultCam");
-    toggleColorMenu();
     toggleCustomButtons(false);
     toggleButtons(true);
+    toggleColorMenu(true);
     changeColor(carBody);
+    
   });
 
   wheelColorBtn.addEventListener("click", function () {
     let wheels = modifyObjects
       .filter(
         (obj) => obj.name.toLowerCase().includes("r35_wheel_05a_20x11") //only gets the wheels of the car
-      )
-      .slice();
+      )  .map(obj => obj.clone());
+    
 
     toggleCameras("wheelCam");
     toggleCustomButtons(false);
-    toggleColorMenu();
     toggleButtons(true);
+    toggleColorMenu(true);
     changeColor(wheels);
   });
 
@@ -124,8 +136,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let window = windshield.concat(glassdoor);
     toggleCustomButtons(false);
     toggleCameras("windowCam");
-    toggleColorMenu();
     toggleButtons(true);
+    toggleColorMenu(true);
     changeColor(window);
 
     window.forEach((child) => {
@@ -152,25 +164,34 @@ function toggleCustomButtons(showBtn) {
   });
 }
 
-function toggleColorMenu() {
+function toggleColorMenu(showBtn) {
   const circles = document.querySelectorAll("#colorMenu .circle");
   const colorMenu = document.getElementById("colorMenu");
-  colorMenu.style.display = "flex";
-  closeBtn.style.display = "none";
+  colorMenu.style.display = showBtn ? "flex" : "none";
+  closeBtn.style.display = "none"
 
-  circles.forEach(function (circle) {
-    let colorId = circle.id;
-    circle.classList.add(colorId);
-  });
 }
+
+
+let previousMeshes = []; // Store the previous meshes
 
 function changeColor(carmesh) {
-  const circles = document.querySelectorAll("#colorMenu .circle");
-  circles.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      carmesh.forEach((mesh) => {
-        mesh.material.color.set(btn.id);
-      });
+    const circles = document.querySelectorAll("#colorMenu .circle");
+    const meshesChanged = carmesh.length !== previousMeshes.length;
+
+    if (meshesChanged) {
+        previousMeshes = [...carmesh]; 
+    }
+    
+    circles.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            const colorClass = btn.classList[1];
+            carmesh.forEach((mesh) => {
+                mesh.material.color.set(colorClass);
+            });
+            carmesh.length = 0
+        });
+        
     });
-  });
 }
+

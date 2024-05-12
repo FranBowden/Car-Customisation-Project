@@ -135,7 +135,7 @@ right: 40%;
 }
 
 
-#closeBtn {
+#closeBtn{
   background-color: white;
   bottom: 10%;
   left: 50%; /* Center the element */
@@ -155,7 +155,27 @@ right: 40%;
   transition: transform 0.3s ease;
 }
 
-#closeBtn:hover {
+
+ #closeMenuBtn {
+  background-color: white;
+  border-radius: 50%;
+  background-image: url(icons/close.png);
+  background-repeat: no-repeat;
+  border: 20px white solid;
+  opacity: 60%;
+  background-position: center;
+  z-index: 9999;
+  background-size: contain;
+  box-shadow: 0px 0px 4px 1px rgb(12, 12, 12);
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s ease;
+}
+
+
+
+
+#closeBtn:hover, #closeMenu:hover {
   background-color:darkgray;
   border: 20px darkgray solid;
   opacity: 70%;

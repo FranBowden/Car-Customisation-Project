@@ -12,7 +12,6 @@ import {
 
 export const settingBtn = document.getElementById("settingBtn");
 export const closeBtn = document.getElementById("closeBtn");
-export let slowMode = false;
 
 let wheelCamView = new THREE.Vector3(2, 0.5, 2);
 let windowCamView = new THREE.Vector3(0, 3, 3);
@@ -28,10 +27,12 @@ let camera = new THREE.PerspectiveCamera(
   1000
 );
 
-loadModel(scene);
 
-camera.position.set(2, 2, 4);
+camera.position.set(defaultCamView)
+
 scene.add(camera);
+
+loadModel(scene);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -77,30 +78,35 @@ document.addEventListener("mousedown", function (event) {
   }
 });
 
-let previousTime = Date.now();
+let previousTime = 0;
 let previousAngle = 0;
+let currentTime = 0
+let currentAngle = 0;
+
+closeBtn.addEventListener("click", function() {
+  previousAngle = 0.9
+})
 
 function updateCameraPositions(model) {
-  if (!customMode) {
-    const radius = 4,
-      height = 2;
-    const center = model.position.clone();
 
-    let currentTime = Date.now(); //calculate time and elapsed time
+  if (!customMode) {
+ 
+    const radius = 4, height = 2;
+    const center = model.position.clone();
+    currentTime += 1
     let elapsedTime = currentTime - previousTime;
     previousTime = currentTime;
 
-    let currentAngle = previousAngle + speed * elapsedTime;
-
+    currentAngle = previousAngle + speed * elapsedTime;
     let x = center.x + Math.cos(currentAngle) * radius;
     let z = center.z + Math.sin(currentAngle) * radius;
-
     camera.position.set(x, center.y + height, z);
     camera.lookAt(center);
 
     previousAngle = currentAngle;
   }
 }
+
 
 function moveCamera(pos) {
   let distance = camera.position.distanceTo(pos);

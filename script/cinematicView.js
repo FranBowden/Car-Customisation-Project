@@ -1,6 +1,6 @@
 import { settingBtn, closeBtn, ambientLight } from "./main.js";
 import {cinematicView} from "./customiseView.js"
-export let speed = 0.0004
+export let speed = 0.004
 
 
 function toggleDisplay(showSettingBtn) {
@@ -17,7 +17,7 @@ function toggleDisplay(showSettingBtn) {
       return; 
     }
     if(cinematicView) {
-          speed = 0.0001;
+          speed = 0.001;
           ambientLight.visible = true;
           toggleDisplay(true);
   }
@@ -29,7 +29,7 @@ function toggleDisplay(showSettingBtn) {
       return;
     }
     if (event.button === 0) {
-        speed = 0.0004
+        speed = 0.004
         ambientLight.visible = false;
         toggleDisplay(false);
     }

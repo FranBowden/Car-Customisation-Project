@@ -1,3 +1,4 @@
+//importing:
 import * as THREE from "three";
 import { loadModel, modifyObjects, model } from "./modelLoader.js";
 import { speed } from "./cinematicView.js";
@@ -10,36 +11,39 @@ import {
   customMode,
 } from "./customiseView.js";
 
+
+//exporting variables
 export const settingBtn = document.getElementById("settingBtn");
 export const closeBtn = document.getElementById("closeBtn");
+export let ambientLight = new THREE.AmbientLight(0x00433, 100);
 
+//camera position coords: 
 let wheelCamView = new THREE.Vector3(2, 0.5, 2);
 let windowCamView = new THREE.Vector3(0, 3, 3);
 let headlights = new THREE.Vector3(0, 2, 3.5);
 let defaultCamView = new THREE.Vector3(3, 2, 3);
 let insideCamView = new THREE.Vector3(0, 1.2, -0.5);
-const scene = new THREE.Scene();
 
-let camera = new THREE.PerspectiveCamera(
+const scene = new THREE.Scene(); //create a new scene
+
+let camera = new THREE.PerspectiveCamera( //create a new camera
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
 
-//scene.background = new THREE.Color(0xADD8E6); // Blue color
-camera.position.set(defaultCamView)
 
-scene.add(camera);
+loadModel(scene); //load model into scene 
+scene.add(camera); //add camera to scene 
 
-loadModel(scene);
-
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-
+//creating our canvas/renderer: 
+const renderer = new THREE.WebGLRenderer(); //create a new renderer 
+renderer.setSize(window.innerWidth, window.innerHeight); //set renderer to the width/height of window
 const canvasContainer = document.getElementById("canvas-container");
-canvasContainer.appendChild(renderer.domElement);
+canvasContainer.appendChild(renderer.domElement); 
 
+//light settings:
 const pointLight1 = new THREE.PointLight(0xfffffff, 1000, 1000);
 pointLight1.position.set(0, 30, 0);
 scene.add(pointLight1);
@@ -52,16 +56,10 @@ const pointLight3 = new THREE.PointLight(0xfffffff, 1000, 1000);
 pointLight3.position.set(-30, 0, 0);
 scene.add(pointLight3);
 
-const pointLight4 = new THREE.RectAreaLight(0xfffffff, 700, 700);
-pointLight4.position.set(0, 2, -5);
-scene.add(pointLight4);
-
-pointLight4.visible = false;
-export let ambientLight = new THREE.AmbientLight(0x00433, 100);
-
 scene.add(ambientLight);
 ambientLight.visible = false;
 
+//For debugging purposes - Console log out information object that has been selected
 document.addEventListener("mousedown", function (event) {
   const mouse = new THREE.Vector2();
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -86,12 +84,11 @@ closeBtn.addEventListener("click", function() {
   previousAngle = 0.9
 })
 
-function updateCameraPositions(model) {
-
-  if (!customMode) {
- 
-    const radius = 5, height = 2;
-    const center = model.position.clone();
+function rotateCameraAroundCar(model) { //default camera view - Allows camera to rotate around the car
+  if (!customMode) { //as long as it is not in customise mode
+    const radius = 4, height = 2;
+    const center = model.position.clone()
+    center.z -= 35
     currentTime += 1
     let elapsedTime = currentTime - previousTime;
     previousTime = currentTime;
@@ -107,7 +104,7 @@ function updateCameraPositions(model) {
 }
 
 
-function moveCamera(pos) {
+function moveCamera(pos) { //This function allows the camera to move to certain coords that were previous created when user selects a button
   let distance = camera.position.distanceTo(pos);
   if (distance > 0.01) {
     camera.position.lerp(pos, 0.03);
@@ -115,9 +112,10 @@ function moveCamera(pos) {
   }
 }
 
+//update function:
 var UpdateLoop = function () {
   if (model) {
-    updateCameraPositions(model);
+    rotateCameraAroundCar(model);
   }
 
   if (defaultCam) {
@@ -138,14 +136,16 @@ var UpdateLoop = function () {
 
   if (insideCam) {
     moveCamera(insideCamView);
-    pointLight4.visible = true;
   }
+
+
   renderer.render(scene, camera);
 
   requestAnimationFrame(UpdateLoop);
 };
 requestAnimationFrame(UpdateLoop);
 
+//resizing window
 var MyResize = function () {
   var width = window.innerWidth; //get the new sizes
   var height = window.innerHeight;

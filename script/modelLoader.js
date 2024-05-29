@@ -4,13 +4,31 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 export let modifyObjects = [];
 export let model;
 export let loading = true;
-
-
 export function loadModel(scene) {
  
+  const sceneLoader = new GLTFLoader();
+  sceneLoader.load( //load background scene 
+    "model/road/scene.gltf",function(gltf) {
+      model = gltf.scene;
+     model.position.z += 35
+      model.traverse((child) => {
+        if (child.isMesh) {
+          modifyObjects.push(child);
+          const material = new THREE.MeshStandardMaterial({
+            color: child.material.color,
+          });
+          console.log("Material:", material);
+          if (material.map) {
+            console.log("Texture loaded:", material.map.image.src); //check texture source
+          }
+        }
+      });
+      scene.add(gltf.scene);
+    })
+
   const loader = new GLTFLoader();
   loader.load(
-    "model/car/scene.gltf",
+    "model/car/scene.gltf", //load car scene 
     function (gltf) {
       model = gltf.scene;
       model.traverse((child) => {
@@ -42,23 +60,5 @@ export function loadModel(scene) {
   );
 
 
-  const sceneLoader = new GLTFLoader();
-  sceneLoader.load(
-    "model/road/scene.gltf",function(gltf) {
-      model = gltf.scene;
-      model.traverse((child) => {
-        if (child.isMesh) {
-          modifyObjects.push(child);
-          const material = new THREE.MeshStandardMaterial({
-            color: child.material.color,
-          });
-          console.log("Material:", material);
-          if (material.map) {
-            console.log("Texture loaded:", material.map.image.src); //check texture source
-          }
-        }
-      });
-      scene.add(gltf.scene);
-    })
 
 }

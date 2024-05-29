@@ -9,16 +9,26 @@ export let defaultCam = false;
 export let insideCam = false;
 export let customMode = false;
 export let lightCam = false;
+ 
 
+// Selecting the buttons/div from html and storing them in variables 
 const bodyBtn = document.getElementById("bodybutton");
 const wheelColorBtn = document.getElementById("wheelbutton");
 const windowColorBtn = document.getElementById("windowbutton");
 const viewInside = document.getElementById("viewInsideCar");
-const lightBtn = document.getElementById("lightButton")
-const closeMenuBtn = document.getElementById("closeMenuBtn")
+const lightBtn = document.getElementById("lightButton");
+const closeMenuBtn = document.getElementById("closeMenuBtn");
+const changeSeatBtn = document.getElementById("ChangeSeatBtn");
+const closeInnerBtn = document.getElementById("closeBtnAgain");
+
+const t1 = document.querySelector(".t1");
+const t2 = document.querySelector(".t2");
+const t3 = document.querySelector(".t3");
+let needUpdate = false;
 
 
-function toggleCameras(currentCam) {
+
+function toggleCameras(currentCam) { //toggles what camera should be used:
   defaultCam = false;
   wheelCam = false;
   windowCam = false;
@@ -26,7 +36,7 @@ function toggleCameras(currentCam) {
   lightCam = false;
 
   switch (currentCam) {
-    case "defaultCam":
+    case "defaultCam": 
       defaultCam = true;
       break;
     case "wheelCam":
@@ -47,10 +57,98 @@ function toggleCameras(currentCam) {
   }
 }
 
+
+
+function toggleButtons(showBtn) {
+  settingBtn.style.display = showBtn ? "none" : "block";
+closeBtn.style.display = showBtn ? "block" : "none";
+}
+
+function toggleCustomButtons(showBtn) {
+const buttons = document.querySelectorAll(".hiddenButton");
+buttons.forEach((btn) => {
+  btn.style.display = showBtn ? "block" : "none";
+});
+}
+
+function insidetoggleCustomButtons(showBtn) {
+  const buttons = document.querySelectorAll(".insideHiddenButton");
+  buttons.forEach((btn) => {
+    btn.style.display = showBtn ? "block" : "none";
+  });
+  }
+
+function toggleColorMenu(showBtn) {
+const circles = document.querySelectorAll("#colorMenu .circle");
+const colorMenu = document.getElementById("colorMenu");
+colorMenu.style.display = showBtn ? "flex" : "none";
+closeBtn.style.display = "none"
+}
+
+
+function changeColor(carmesh) {
+  const circles = document.querySelectorAll("#colorMenu .circle");
+  circles.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+          const colorClass = btn.classList[1];
+          carmesh.forEach((mesh) => {
+              mesh.material.color.set(colorClass);
+          });
+         carmesh.length = 0
+      });
+      
+  });
+}
+
+function toggleTexSeatMenu(showBtn) {
+  const colorMenu = document.getElementById("TexSeatMenu");
+  colorMenu.style.display = showBtn ? "flex" : "none";
+  closeBtn.style.display = "none"
+  }
+  
+
+  function changeTexture(texturePath) {
+    let seat = modifyObjects.filter((obj) => obj.name.toLowerCase().includes("leather"));
+  
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+      texturePath,
+      function(newTexture) {
+        seat.forEach(mesh => {
+          newTexture.repeat.set(1, 1);
+          newTexture.wrapS = THREE.RepeatWrapping;
+          newTexture.wrapT = THREE.RepeatWrapping;
+  
+          mesh.material.map = newTexture;
+          mesh.material.needsUpdate = true;
+        });
+      },
+      undefined,
+      function(err) {
+        console.error("Error loading texture:", err);
+      }
+    );
+  }
+  
+
+  t1.addEventListener("click", function() {
+    changeTexture("textures/r35_leather_baseColor.png");
+  });
+  
+  t2.addEventListener("click", function() {
+    changeTexture("textures/l2.png");
+  });
+
+  t3.addEventListener("click", function() {
+    changeTexture("textures/default.png");
+  });
+  
+
+
 document.addEventListener("DOMContentLoaded", function () {
   document.body.addEventListener("click", function () {
     if (!cinematicView) {
-      settingBtn.style.display = "none";
+      settingBtn.style.display = "none"; //do not display setting button
     }
   });
 
@@ -68,8 +166,9 @@ document.addEventListener("DOMContentLoaded", function () {
     defaultCam = false;
     toggleButtons(false);
     toggleCustomButtons(false);
-    
+    insidetoggleCustomButtons(false)
     colorMenu.style.display = "none";
+    
   });
 
   closeMenuBtn.addEventListener("click", function() {
@@ -78,11 +177,26 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleColorMenu(false)
     closeBtn.style.display = "block"
   })
+closeInnerBtn.addEventListener("click", function() {
+  toggleCameras("defaultCam");
+  toggleTexSeatMenu(false)
+    toggleCustomButtons(true);
+    closeBtn.style.display = "block"
+
+})
+
+  changeSeatBtn.addEventListener("click", function() {
+    toggleTexSeatMenu(true);
+    toggleCustomButtons(false);
+    insidetoggleCustomButtons(false)
+    
+  })
 
   viewInside.addEventListener("click", function () {
     toggleCameras("insideCam");
     toggleCustomButtons(false);
-    toggleButtons(true);
+    insidetoggleCustomButtons(true)
+
   });
 
   lightBtn.addEventListener("click", function () {
@@ -113,7 +227,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .filter(
         (obj) => obj.name.toLowerCase().includes("r35_wheel_05a_20x11") //only gets the wheels of the car
       )  
-    
       
     toggleCameras("wheelCam");
     toggleCustomButtons(false);
@@ -148,39 +261,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-
-function toggleButtons(showBtn) {
-  //toggles the main setting buttons e.g. if setting is clicked, then show close btn
-  settingBtn.style.display = showBtn ? "none" : "block";
-  closeBtn.style.display = showBtn ? "block" : "none";
-}
-
-function toggleCustomButtons(showBtn) {
-  const buttons = document.querySelectorAll(".hiddenButton");
-  buttons.forEach((btn) => {
-    btn.style.display = showBtn ? "block" : "none";
-  });
-}
-
-function toggleColorMenu(showBtn) {
-  const circles = document.querySelectorAll("#colorMenu .circle");
-  const colorMenu = document.getElementById("colorMenu");
-  colorMenu.style.display = showBtn ? "flex" : "none";
-  closeBtn.style.display = "none"
-}
-
-
-function changeColor(carmesh) {
-    const circles = document.querySelectorAll("#colorMenu .circle");
-    circles.forEach(function (btn) {
-        btn.addEventListener("click", function () {
-            const colorClass = btn.classList[1];
-            carmesh.forEach((mesh) => {
-                mesh.material.color.set(colorClass);
-            });
-           carmesh.length = 0
-        });
-        
-    });
-}
 

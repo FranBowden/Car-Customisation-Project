@@ -16,49 +16,12 @@
   bottom: 0;
 }
 
-.btn {
+.buttons {
   position: fixed;
-  top: 50%;
-  padding: 20px;
-  background-color: grey;
-  z-index: 9998; 
-}
-
-.wheelbutton{
-  position: fixed;
-  bottom: 30%;
-right: 40%;
   background-color: azure;
-  background-image: url(./icons/editcolour.png);
-  background-size: cover;
-  padding: 20px;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-  box-shadow: 0px 0px 3px 1px rgb(150, 150, 150);
-  z-index: 9995;
-}
-
-.bodybutton{
-  position: fixed;
-  top: 25%;
-  left: 35%;
-  background-color: azure;
-  background-image: url(icons/editcolour.png);
-  background-size: cover;
-  padding: 20px;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-  box-shadow: 0px 0px 3px 1px rgb(150, 150, 150);
-  z-index: 9996;
-}
-
-.windowbutton{
-  position: fixed;
-  top: 15%;
-  left: 47%;
-  background-color: azure;
-  background-image: url(icons/editcolour.png);
-  background-size: cover;
+  background-position: center;
+  background-size: 80%;
+  background-repeat: no-repeat;
   padding: 20px;
   border-radius: 8px;
   transition: transform 0.3s ease;
@@ -66,7 +29,41 @@ right: 40%;
   z-index: 9997;
 }
 
-.wheelbutton:hover,.bodybutton:hover,.windowbutton:hover,#viewInsideCar:hover,#lightButton:hover{
+
+.wheelbutton{
+  bottom: 30%;
+  right: 40%;
+  background-image: url(./icons/editcolour.png);
+  background-size: cover;
+}
+
+.bodybutton{
+  top: 25%;
+  left: 35%;
+  background-image: url(icons/editcolour.png);
+  background-size: cover;
+}
+
+.windowbutton{
+  top: 15%;
+  left: 47%;
+  background-image: url(icons/editcolour.png);
+  background-size: cover;
+}
+#ChangeSeatBtn {
+  top: 60%;
+  left: 69%;
+  background-image: url(icons/editcolour.png);
+  background-size: cover;
+}
+#ChangeWheelBtn {
+  top: 35%;
+  left: 25%;
+  background-image: url(icons/editcolour.png);
+  background-size: cover;
+}
+
+.wheelbutton:hover,.bodybutton:hover,.windowbutton:hover,#viewInsideCar:hover,#lightButton:hover, #ChangeWheelBtn:hover, #ChangeSeatBtn:hover{
   background-color: darkgray;
 
 }
@@ -76,37 +73,24 @@ right: 40%;
   display: none;
 }
 
+
+.insideHiddenButton {
+  opacity: 65%;
+  display: none;
+}
+
 #lightButton {
-  position: fixed;
   top: 60%;
   left: 38%;
-  background-color: azure;
   background-image: url(icons/light.png);
-  background-position: center;
-  background-size: 80%;
-  background-repeat: no-repeat;
-  padding: 20px;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-  box-shadow: 0px 0px 3px 1px rgb(150, 150, 150);
-  z-index: 9997;
 }
 
 #viewInsideCar {
-  position: fixed;
   top: 12%;
   left: 60%;
-  background-color: azure;
   background-image: url(icons/inside.png);
-  background-position: center;
-  background-size: 80%;
-  background-repeat: no-repeat;
-  padding: 20px;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
-  box-shadow: 0px 0px 3px 1px rgb(150, 150, 150);
-  z-index: 9997;
 }
+
 #settingBtn {
   background-color: white;
   bottom: 10%;
@@ -115,8 +99,8 @@ right: 40%;
   border-radius: 50%;
   background-image: url(icons/setting-icon.png);
   background-repeat: no-repeat;
-  opacity: 60%;
   border: 20px white solid;
+  opacity: 60%;
   background-position: center;
   z-index: 9999;
   background-size: contain;
@@ -171,9 +155,21 @@ right: 40%;
   height: 30px;
   transition: transform 0.3s ease;
 }
-
-
-
+#closeBtnAgain {
+  background-color: white;
+  border-radius: 50%;
+  background-image: url(icons/close.png);
+  background-repeat: no-repeat;
+  border: 20px white solid;
+  opacity: 60%;
+  background-position: center;
+  z-index: 9999;
+  background-size: contain;
+  box-shadow: 0px 0px 4px 1px rgb(12, 12, 12);
+  width: 30px;
+  height: 30px;
+  transition: transform 0.3s ease;
+}
 
 #closeBtn:hover, #closeMenu:hover {
   background-color:darkgray;
@@ -208,7 +204,43 @@ right: 40%;
   height: 70px;
   margin: 0 10px; 
   border-radius: 50%;
+
 }
+.t1,.t2,.t3 {
+  width: 70px;
+  height: 70px;
+  margin: 0 10px; 
+  border-radius: 50%;
+  background-color: transparent; /* Remove the white background color */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  box-shadow: 0px 0px 4px 1px rgb(12, 12, 12);
+}
+
+.t1.image1 {
+  background-image: url("textures/r35_leather_baseColor.png");
+}
+
+.t2.image2 {
+  background-image: url("textures/l2.png");
+}
+
+.t3.image3 {
+  background-image: url("textures/default.png");
+}
+
+
+#TexSeatMenu {
+  display: none;
+  justify-content: center;
+  position: fixed;
+  bottom: 10%;
+  left: 50%; 
+  transform: translateX(-50%); 
+}
+
+
 
 /*car colours*/
 .blue { background-color: rgba(25, 26, 113); }

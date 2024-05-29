@@ -34,22 +34,3 @@ function toggleDisplay(showSettingBtn) {
         toggleDisplay(false);
     }
   });
-
-/*
-function shakeCamera(camera, intensity) {
-    const offsetX = (Math.random() - 0.5) * intensity;
-    const offsetY = (Math.random() - 0.5) * intensity;
-    const offsetZ = (Math.random() - 0.5) * intensity;
-  
-    const offsetRotX = ((Math.random() - 0.5) * intensity * Math.PI) / 180;
-    const offsetRotY = ((Math.random() - 0.5) * intensity * Math.PI) / 180;
-    const offsetRotZ = ((Math.random() - 0.5) * intensity * Math.PI) / 180;
-  
-    camera.position.x += offsetX;
-    camera.position.y += offsetY;
-    camera.position.z += offsetZ;
-  
-    camera.rotation.x += offsetRotX;
-    camera.rotation.y += offsetRotY;
-    camera.rotation.z += offsetRotZ;
-  }*/

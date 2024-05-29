@@ -211,22 +211,23 @@ right: 40%;
 }
 
 /*car colours*/
-.blue { background-color: rgba(12, 15, 174, 0.774); }
-.green { background-color: rgb(6, 100, 6); }
+.blue { background-color: rgba(25, 26, 113); }
+.green { background-color: rgb(105, 178, 65); }
 .red { background-color: rgb(174, 18, 18); }
 .black { background-color: black; }
 .white { background-color: white; }
-.pink { background-color: rgb(228, 136, 151); }
+.golden { background-color: rgb(255, 225, 0); }
+.silver { background-color: rgb(128, 128, 128); }
 
 
 .page-loader{
   width: 100%;
   height: 100vh;
   position: absolute;
-  background: #272727;
+  background: #1f1f1f;
   z-index: 1000;
   .txt{
-      color: #666;
+      color: #444444;
       text-align: center;
       top: 40%;
       position: relative;

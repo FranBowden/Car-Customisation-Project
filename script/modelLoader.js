@@ -5,35 +5,12 @@ export let modifyObjects = [];
 export let model;
 export let loading = true;
 
-const planeGeometry = new THREE.PlaneGeometry(1000, 1000); // Adjust width and height as needed
-const textureLoader = new THREE.TextureLoader();
 
 export function loadModel(scene) {
-  textureLoader.load(
-    "textures/concrete_floor.jpg",
-    function (texture) {
-      texture.wrapS = THREE.RepeatWrapping;
-      texture.wrapT = THREE.RepeatWrapping;
-      texture.repeat.set(100, 100); // Adjust repeat values as needed
-      const material = new THREE.MeshPhongMaterial({
-        map: texture,
-        transparent: 1,
-        opacity: 0.4,
-      });
-      const planeMesh = new THREE.Mesh(planeGeometry, material);
-      planeMesh.rotation.x = -Math.PI / 2; // Rotate by -90 degrees around the x-axis
-      scene.add(planeMesh);
-    },
-    undefined,
-    function (error) {
-      console.error("Error loading texture:", error);
-    }
-  );
-
-
+ 
   const loader = new GLTFLoader();
   loader.load(
-    "model/scene.gltf",
+    "model/car/scene.gltf",
     function (gltf) {
       model = gltf.scene;
       model.traverse((child) => {
@@ -63,4 +40,25 @@ export function loadModel(scene) {
       console.log("Error loading GLTF model:", error);
     }
   );
+
+
+  const sceneLoader = new GLTFLoader();
+  sceneLoader.load(
+    "model/road/scene.gltf",function(gltf) {
+      model = gltf.scene;
+      model.traverse((child) => {
+        if (child.isMesh) {
+          modifyObjects.push(child);
+          const material = new THREE.MeshStandardMaterial({
+            color: child.material.color,
+          });
+          console.log("Material:", material);
+          if (material.map) {
+            console.log("Texture loaded:", material.map.image.src); //check texture source
+          }
+        }
+      });
+      scene.add(gltf.scene);
+    })
+
 }

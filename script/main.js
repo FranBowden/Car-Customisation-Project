@@ -27,7 +27,7 @@ let camera = new THREE.PerspectiveCamera(
   1000
 );
 
-
+//scene.background = new THREE.Color(0xADD8E6); // Blue color
 camera.position.set(defaultCamView)
 
 scene.add(camera);
@@ -36,7 +36,6 @@ loadModel(scene);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x00000, 1);
 
 const canvasContainer = document.getElementById("canvas-container");
 canvasContainer.appendChild(renderer.domElement);
@@ -53,7 +52,7 @@ const pointLight3 = new THREE.PointLight(0xfffffff, 1000, 1000);
 pointLight3.position.set(-30, 0, 0);
 scene.add(pointLight3);
 
-const pointLight4 = new THREE.PointLight(0xfffffff, 700, 700);
+const pointLight4 = new THREE.RectAreaLight(0xfffffff, 700, 700);
 pointLight4.position.set(0, 2, -5);
 scene.add(pointLight4);
 
@@ -91,7 +90,7 @@ function updateCameraPositions(model) {
 
   if (!customMode) {
  
-    const radius = 4, height = 2;
+    const radius = 5, height = 2;
     const center = model.position.clone();
     currentTime += 1
     let elapsedTime = currentTime - previousTime;

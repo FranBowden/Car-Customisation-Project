@@ -47,8 +47,6 @@ function toggleCameras(currentCam) {
   }
 }
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
   document.body.addEventListener("click", function () {
     if (!cinematicView) {
@@ -101,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
   bodyBtn.addEventListener("click", function () {
     let carBody = modifyObjects
       .filter((obj) => obj.name.toLowerCase().includes("paint_0"))
-      .map(obj => obj.clone());
+   
     toggleCameras("defaultCam");
     toggleCustomButtons(false);
     toggleButtons(true);
@@ -114,9 +112,9 @@ document.addEventListener("DOMContentLoaded", function () {
     let wheels = modifyObjects
       .filter(
         (obj) => obj.name.toLowerCase().includes("r35_wheel_05a_20x11") //only gets the wheels of the car
-      )  .map(obj => obj.clone());
+      )  
     
-
+      
     toggleCameras("wheelCam");
     toggleCustomButtons(false);
     toggleButtons(true);
@@ -169,27 +167,18 @@ function toggleColorMenu(showBtn) {
   const colorMenu = document.getElementById("colorMenu");
   colorMenu.style.display = showBtn ? "flex" : "none";
   closeBtn.style.display = "none"
-
 }
 
 
-let previousMeshes = []; // Store the previous meshes
-
 function changeColor(carmesh) {
     const circles = document.querySelectorAll("#colorMenu .circle");
-    const meshesChanged = carmesh.length !== previousMeshes.length;
-
-    if (meshesChanged) {
-        previousMeshes = [...carmesh]; 
-    }
-    
     circles.forEach(function (btn) {
         btn.addEventListener("click", function () {
             const colorClass = btn.classList[1];
             carmesh.forEach((mesh) => {
                 mesh.material.color.set(colorClass);
             });
-            carmesh.length = 0
+           carmesh.length = 0
         });
         
     });
